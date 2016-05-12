@@ -103,6 +103,17 @@ get_platform()
     eval "$1='linux'"
 }
 
+# Returns the current version
+get_current_version()
+{
+    local version=$(readlink $BIN_DIR/lua)
+
+    version=${version#$LUA_DIR/}
+    version=${version%/bin/lua}
+    
+    eval "$1='$version'"
+}
+
 # End of Helper functions
 ###############################################################################
 
@@ -198,12 +209,27 @@ uninstall_lua()
 
 list()
 {
-    :
+    installed_versions=($(ls $LUA_DIR/))
+    get_current_version current_version
+
+    echo "Installed versions: "
+    for version in "${installed_versions[@]}"
+    do
+        if [ "${version}" == "${current_version}" ]
+        then
+            echo "lua-${version} <--"
+        else 
+            echo "lua-${version}"
+        fi
+    done
 }
 
 current()
 {
-    :
+    get_current_version current_version
+
+    echo "Current Version:"
+    echo "lua-${current_version}"
 }
 
 version()
