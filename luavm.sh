@@ -9,27 +9,45 @@ BIN_DIR="${LUAVM_DIR}/bin"      # Where binaries/soft links are present
 ###############################################################################
 # Helper functions
 
+# Error handling function
+error()
+{
+    printf "$1\n" 1>&2
+    exit 1
+}
+
+# A wrapper function to execute commands on the terminal and exit on error
+exec_command()
+{
+    eval $1
+
+    if [ ! $? -eq 0 ]
+    then
+        error "Unable to execute following command:\n$1\nExiting"
+    fi
+}
+
 # Perform some initialization
 init()
 {
     if [ ! -e $LUAVM_DIR ]
     then
-        mkdir $LUAVM_DIR
+        exec_command "mkdir ${LUAVM_DIR}"
     fi
 
     if [ ! -e $SRC_DIR ]
     then
-        mkdir $SRC_DIR
+        exec_command "mkdir ${SRC_DIR}"
     fi
 
     if [ ! -e $LUA_DIR ]
     then
-        mkdir $LUA_DIR
+        exec_command "mkdir ${LUA_DIR}"
     fi
 
     if [ ! -e $BIN_DIR ]
     then
-        mkdir $BIN_DIRs
+        exec_command "mkdir ${BIN_DIRs}"
     fi
 }
 
@@ -39,13 +57,6 @@ exists()
     type "$1" > /dev/null 2>&1
 }
 
-# Error handling function
-error()
-{
-    echo "$1" 1>&2
-    exit 1
-}
-
 # Downloads file from a url
 download()
 {
@@ -53,10 +64,10 @@ download()
 
     if exists "curl"
     then
-        curl -R -O $url
+        exec_command "curl -R -O ${url}"
     elif exists "wget"
     then
-        wget $url
+        exec_command "wget ${url}"
     else
         error "Either 'curl' or 'wget' must be installed"
     fi
@@ -67,7 +78,7 @@ unpack()
 {
     if exists "tar"
     then
-        tar xvzf $1
+        exec_command "tar xvzf ${1}"
     else
         error "'tar' must be installed"
     fi
@@ -107,7 +118,7 @@ install_lua()
     local archive_name="${lua_dir_name}.tar.gz"
     local url="http://www.lua.org/ftp/${archive_name}"
 
-    cd $SRC_DIR
+    exec_command "cd ${SRC_DIR}"
 
     # Checking if archive already downloaded or not
     if [ -e $lua_dir_name ]
@@ -115,7 +126,7 @@ install_lua()
         read -r -p "${lua_dir_name} has already been downloaded. Download again? [Y/n]: " choice
         case $choice in
             [yY][eE][sS] | [yY] )
-                rm -r $lua_dir_name
+                exec_command "rm -r ${lua_dir_name}"
                 ;;
         esac 
     fi
@@ -125,13 +136,13 @@ install_lua()
     then
         download $url
         unpack $archive_name
-        rm $archive_name
+        exec_command "rm ${archive_name}"
     fi
 
     get_platform platform
 
-    cd $lua_dir_name
-    make $platform install INSTALL_TOP=$LUA_DIR/$version/
+    exec_command "cd ${lua_dir_name}"
+    exec_command "make ${platform} install INSTALL_TOP=${LUA_DIR}/${version}/"
 
     read -r -p "${lua_dir_name} successfully installed. Do you want to this version? [Y/n]: " choice
     case $choice in
@@ -147,7 +158,7 @@ use()
     local lua_name="lua-${version}"
 
     # Checking if this version exists
-    cd $LUA_DIR
+    exec_command "cd ${LUA_DIR}"
 
     if [ ! -e $version ]
     then
@@ -162,18 +173,27 @@ use()
         return
     fi
 
-    cd $BIN_DIR
+    exec_command "cd ${BIN_DIR}"
     if [ -L "lua" ]
     then
-        rm lua
+        exec_command "rm lua"
     fi
 
-    ln -s "${LUA_DIR}/${version}/bin/lua"
+    exec_command 'ln -s "${LUA_DIR}/${version}/bin/lua"'
 }
 
 uninstall_lua()
 {
-    :
+    local version=$1
+    local lua_name="lua-${version}"
+
+    exec_command "cd ${LUA_DIR}"
+    if [ ! -e "${version}" ]
+    then
+        error "${lua_name} is not installed"
+    fi
+
+    exec_command 'rm -r "${version}"'
 }
 
 list()
