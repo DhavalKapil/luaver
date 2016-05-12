@@ -1,9 +1,10 @@
 #!/bin/bash
 
 # Directories to be used
-LUAVM_DIR="${HOME}/.luavm"
-SRC_DIR="${LUAVM_DIR}/src"
-LUA_DIR="${LUAVM_DIR}/lua"
+LUAVM_DIR="${HOME}/.luavm"      # The luavm directory
+SRC_DIR="${LUAVM_DIR}/src"      # Where source code is downloaded and unpacked
+LUA_DIR="${LUAVM_DIR}/lua"      # Where source is built
+BIN_DIR="${LUAVM_DIR}/bin"      # Where binaries/soft links are present
 
 ###############################################################################
 # Helper functions
@@ -24,6 +25,11 @@ init()
     if [ ! -e $LUA_DIR ]
     then
         mkdir $LUA_DIR
+    fi
+
+    if [ ! -e $BIN_DIR ]
+    then
+        mkdir $BIN_DIRs
     fi
 }
 
@@ -126,11 +132,43 @@ install_lua()
 
     cd $lua_dir_name
     make $platform install INSTALL_TOP=$LUA_DIR/$version/
+
+    read -r -p "${lua_dir_name} successfully installed. Do you want to this version? [Y/n]: " choice
+    case $choice in
+        [yY][eE][sS] | [yY] )
+            use $version
+            ;;
+    esac 
 }
 
 use()
 {
-    :
+    local version=$1
+    local lua_name="lua-${version}"
+
+    # Checking if this version exists
+    cd $LUA_DIR
+
+    if [ ! -e $version ]
+    then
+        read -r -p "${lua_name} is not installed. Want to install it? [Y/n]: " choice
+        case $choice in
+            [yY][eE][sS] | [yY] )
+                install_lua $version
+                ;;
+            * )
+                error "Unable to use ${lua_name}"
+        esac
+        return
+    fi
+
+    cd $BIN_DIR
+    if [ -L "lua" ]
+    then
+        rm lua
+    fi
+
+    ln -s "${LUA_DIR}/${version}/bin/lua"
 }
 
 uninstall_lua()
