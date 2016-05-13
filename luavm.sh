@@ -16,7 +16,16 @@ error()
     exit 1
 }
 
+# Printing bold text - TODO
+print()
+{
+    tput bold
+    echo $1
+    tput sgr0
+}
+
 # A wrapper function to execute commands on the terminal and exit on error
+# Called whenever the execution should stop after any error occurs
 exec_command()
 {
     eval $1
@@ -62,6 +71,8 @@ download()
 {
     local url=$1
 
+    print "Downloading from ${url}"
+
     if exists "curl"
     then
         exec_command "curl -R -O ${url}"
@@ -71,17 +82,23 @@ download()
     else
         error "Either 'curl' or 'wget' must be installed"
     fi
+
+    print "Download successfull"
 }
 
 # Unpacks an archive
 unpack()
 {
+    print "Unpacking ${1}"
+
     if exists "tar"
     then
         exec_command "tar xvzf ${1}"
     else
         error "'tar' must be installed"
     fi
+
+    print "Unpack successfull"
 }
 
 # Returns the platform
@@ -90,16 +107,20 @@ get_platform()
     local platform_str=$(uname | tr "[:upper:]" "[:lower:]")
     local platforms=("aix" "bsd" "c89" "freebsd" "generic" "linux" "macosx" "mingw" "posix" "solaris")
 
+    print "Detecting platform"
+
     for platform in "${platforms[@]}"
     do
         if [[ "${platform_str}" =~ "${platform}" ]]
         then
+            print "Platform detected: ${platform}"
             eval "$1='$platform'"
             return
         fi
     done
 
     # Default platform
+    print "Unable to detect platform. Using default 'linux'"
     eval "$1='linux'"
 }
 
@@ -129,7 +150,11 @@ install_lua()
     local archive_name="${lua_dir_name}.tar.gz"
     local url="http://www.lua.org/ftp/${archive_name}"
 
+    print "Installing ${lua_dir_name}"
+
     exec_command "cd ${SRC_DIR}"
+
+    print "Detecting already downloaded archives"
 
     # Checking if archive already downloaded or not
     if [ -e $lua_dir_name ]
@@ -153,6 +178,9 @@ install_lua()
     get_platform platform
 
     exec_command "cd ${lua_dir_name}"
+
+    print "Compiling ${lua_dir_name}"
+
     exec_command "make ${platform} install INSTALL_TOP=${LUA_DIR}/${version}/"
 
     read -r -p "${lua_dir_name} successfully installed. Do you want to this version? [Y/n]: " choice
@@ -167,6 +195,8 @@ use()
 {
     local version=$1
     local lua_name="lua-${version}"
+
+    print "Switching to ${lua_name}"
 
     # Checking if this version exists
     exec_command "cd ${LUA_DIR}"
@@ -191,12 +221,16 @@ use()
     fi
 
     exec_command 'ln -s "${LUA_DIR}/${version}/bin/lua"'
+
+    print "Successfully switched to ${lua_name}"
 }
 
 uninstall_lua()
 {
     local version=$1
     local lua_name="lua-${version}"
+
+    print "Uninstalling ${lua_name}"
 
     exec_command "cd ${LUA_DIR}"
     if [ ! -e "${version}" ]
@@ -205,6 +239,8 @@ uninstall_lua()
     fi
 
     exec_command 'rm -r "${version}"'
+
+    print "Successfully uninstalled ${lua_name}"
 }
 
 list()
@@ -212,14 +248,14 @@ list()
     installed_versions=($(ls $LUA_DIR/))
     get_current_version current_version
 
-    echo "Installed versions: "
+    print "Installed versions: "
     for version in "${installed_versions[@]}"
     do
         if [ "${version}" == "${current_version}" ]
         then
-            echo "lua-${version} <--"
+            print "lua-${version} <--"
         else 
-            echo "lua-${version}"
+            print "lua-${version}"
         fi
     done
 }
@@ -228,8 +264,8 @@ current()
 {
     get_current_version current_version
 
-    echo "Current Version:"
-    echo "lua-${current_version}"
+    print "Current versionsersion:"
+    print "lua-${current_version}"
 }
 
 version()
@@ -241,12 +277,13 @@ version()
 init
 
 case $1 in
-    "help" )         usage;;
-    "install" )      install_lua ${@:2};;
-    "use" )          use ${@:2};;
-    "uninstall" )    uninstall_lua ${@:2};;
-    "list" )         list;;
-    "current" )      current;;
-    "version" )      version;;
-    * )              usage;;
+    "help" )                usage;;
+    "install" )             install_lua ${@:2};;
+    "use" )                 use ${@:2};;
+    "uninstall" )           uninstall_lua ${@:2};;
+    "list" )                list;;
+    "current" )             current;;
+    "version" )             version;;
+    * )                     usage;;
 esac
+    
