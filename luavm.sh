@@ -1,10 +1,11 @@
 #!/bin/bash
 
 # Directories to be used
-LUAVM_DIR="${HOME}/.luavm"      # The luavm directory
-SRC_DIR="${LUAVM_DIR}/src"      # Where source code is downloaded and unpacked
-LUA_DIR="${LUAVM_DIR}/lua"      # Where source is built
-BIN_DIR="${LUAVM_DIR}/bin"      # Where binaries/soft links are present
+LUAVM_DIR="${HOME}/.luavm"              # The luavm directory
+SRC_DIR="${LUAVM_DIR}/src"              # Where source code is downloaded
+LUA_DIR="${LUAVM_DIR}/lua"              # Where lua source is built
+LUAROCKS_DIR="${LUAVM_DIR}/luarocks"    # Where luarocks source is built
+BIN_DIR="${LUAVM_DIR}/bin"              # Where binaries/soft links are present
 
 ###############################################################################
 # Helper functions
@@ -54,6 +55,11 @@ init()
         exec_command "mkdir ${LUA_DIR}"
     fi
 
+    if [ ! -e $LUAROCKS_DIR ]
+    then
+        exec_command "mkdir ${LUAROCKS_DIR}"
+    fi
+
     if [ ! -e $BIN_DIR ]
     then
         exec_command "mkdir ${BIN_DIRs}"
@@ -73,14 +79,11 @@ download()
 
     print "Downloading from ${url}"
 
-    if exists "curl"
-    then
-        exec_command "curl -R -O ${url}"
-    elif exists "wget"
+    if exists "wget"
     then
         exec_command "wget ${url}"
     else
-        error "Either 'curl' or 'wget' must be installed"
+        error "'wget' must be installed"
     fi
 
     print "Download successfull"
@@ -99,6 +102,37 @@ unpack()
     fi
 
     print "Unpack successfull"
+}
+
+# Downloads and unpacks an archive
+download_and_unpack()
+{
+    local unpack_dir_name=$1
+    local archive_name=$2
+    local url=$3
+
+    print "Detecting already downloaded archives"
+
+    # Checking if archive already downloaded or not
+    if [ -e $unpack_dir_name ]
+    then
+        read -r -p "${unpack_dir_name} has already been downloaded. Download again? [Y/n]: " choice
+        case $choice in
+            [yY][eE][sS] | [yY] )
+                exec_command "rm -r ${unpack_dir_name}"
+                ;;
+        esac
+    fi
+
+    # Downloading the archive only if it does not exists"
+    if [ ! -e $unpack_dir_name ]
+    then
+        print "Downloading ${unpack_dir_name}"
+        download $url
+        print "Extracting archive"
+        unpack $archive_name
+        exec_command "rm ${archive_name}"
+    fi
 }
 
 # Returns the platform
@@ -125,7 +159,7 @@ get_platform()
 }
 
 # Returns the current version
-get_current_version()
+get_current_lua_version()
 {
     local version=$(readlink $BIN_DIR/lua)
 
@@ -154,26 +188,7 @@ install_lua()
 
     exec_command "cd ${SRC_DIR}"
 
-    print "Detecting already downloaded archives"
-
-    # Checking if archive already downloaded or not
-    if [ -e $lua_dir_name ]
-    then
-        read -r -p "${lua_dir_name} has already been downloaded. Download again? [Y/n]: " choice
-        case $choice in
-            [yY][eE][sS] | [yY] )
-                exec_command "rm -r ${lua_dir_name}"
-                ;;
-        esac 
-    fi
-
-    # Downloading the archive only if it does not exists"
-    if [ ! -e $lua_dir_name ]
-    then
-        download $url
-        unpack $archive_name
-        exec_command "rm ${archive_name}"
-    fi
+    download_and_unpack $lua_dir_name $archive_name $url
 
     get_platform platform
 
@@ -246,7 +261,7 @@ uninstall_lua()
 list()
 {
     installed_versions=($(ls $LUA_DIR/))
-    get_current_version current_version
+    get_current_lua_version current_version
 
     print "Installed versions: "
     for version in "${installed_versions[@]}"
@@ -260,12 +275,58 @@ list()
     done
 }
 
+install_luarocks()
+{
+    # Checking whether any version of lua is installed or not
+    get_current_lua_version lua_version
+    if [ "" == "${lua_version}" ]
+    then
+        error "No lua version set"
+    fi
+
+    # Getting the lua version upto two number format
+    lua_version_short=$(${BIN_DIR}/lua -e 'print(_VERSION:sub(5))')
+
+    local version=$1
+    local luarocks_dir_name="luarocks-${version}"
+    local archive_name="${luarocks_dir_name}.tar.gz"
+    local url="http://luarocks.org/releases/${archive_name}"
+
+    print "Installing ${luarocks_dir_name} for lua version ${lua_version}"
+
+    exec_command "cd ${SRC_DIR}"
+
+    download_and_unpack $luarocks_dir_name $archive_name $url
+
+    exec_command "cd ${luarocks_dir_name}"
+
+    print "Compiling ${luarocks_dir_name}"
+
+    exec_command "./configure
+                    --prefix=${LUAROCKS_DIR}/${version}_${lua_version_short}
+                    --with-lua=${LUA_DIR}/${lua_version}
+                    --with-lua-bin=${LUA_DIR}/${lua_version}/bin
+                    --with-lua-include=${LUA_DIR}/${lua_version}/include
+                    --with-lua-lib=${LUA_DIR}/${lua_version}/lib
+                    --versioned-rocks-dir"
+
+    exec_command "make build"
+    exec_command "make install"
+
+    # read -r -p "${luarocks_dir_name} successfully installed. Do you want to this version? [Y/n]: " choice
+    # case $choice in
+    #     [yY][eE][sS] | [yY] )
+    #         use_luarocks $version $lua_version
+    #         ;;
+    # esac
+}
+
 current()
 {
-    get_current_version current_version
+    get_current_lua_version lua_version
 
-    print "Current versionsersion:"
-    print "lua-${current_version}"
+    print "Current version:"
+    print "lua-${lua_version}"
 }
 
 version()
@@ -278,10 +339,17 @@ init
 
 case $1 in
     "help" )                usage;;
+
     "install" )             install_lua ${@:2};;
     "use" )                 use ${@:2};;
     "uninstall" )           uninstall_lua ${@:2};;
     "list" )                list;;
+
+    "install-luarocks")     install_luarocks ${@:2};;
+    "use-luarocks" )        use_luarocks ${@:2};;
+    "uninstall-luarocks" )  uninstall_luarocks ${@:2};;
+    "list-luarocks" )       list_luarocks;;
+
     "current" )             current;;
     "version" )             version;;
     * )                     usage;;
