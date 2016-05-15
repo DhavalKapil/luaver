@@ -178,7 +178,7 @@ get_platform()
     eval "$1='linux'"
 }
 
-# Returns the current version
+# Returns the current lua version
 get_current_lua_version()
 {
     local version=$(readlink $BIN_DIR/lua)
@@ -193,6 +193,18 @@ get_current_lua_version()
 get_current_lua_version_short()
 {
     local version=$(${BIN_DIR}/lua -e 'print(_VERSION:sub(5))')
+
+    eval "$1='$version'"
+}
+
+# Returns the current luarocks version
+get_current_luarocks_version()
+{
+    local version=$(readlink $BIN_DIR/luarocks)
+
+    version=${version#$LUAROCKS_DIR/}
+    version=${version%/bin/luarocks}
+    version=${version%_*}
 
     eval "$1='$version'"
 }
@@ -398,9 +410,11 @@ uninstall_luarocks()
 current()
 {
     get_current_lua_version lua_version
+    get_current_luarocks_version luarocks_version
 
-    print "Current version:"
+    print "Current versions:"
     print "lua-${lua_version}"
+    print "luarocks-${luarocks_version}"
 }
 
 version()
