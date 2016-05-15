@@ -438,6 +438,27 @@ uninstall_luarocks()
     uninstall $luarocks_name $LUAROCKS_DIR "${version}_${lua_version}"
 }
 
+list_luarocks()
+{
+    installed_versions=($(ls $LUAROCKS_DIR/))
+    get_current_luarocks_version current_luarocks_version
+    get_lua_version_by_current_luarocks current_lua_version
+
+    print "Installed versions: "
+    for version in "${installed_versions[@]}"
+    do
+        luarocks_version=${version%_*}
+        lua_version=${version#*_}
+
+        if [ "${luarocks_version}" == "${current_luarocks_version}" ] && [ "${lua_version}" == "${current_lua_version}" ]
+        then
+            print "luarocks-${luarocks_version} (lua version: ${lua_version}) <--"
+        else
+            print "luarocks-${luarocks_version} (lua version: ${lua_version})"
+        fi
+    done
+}
+
 current()
 {
     get_current_lua_version lua_version
