@@ -135,6 +135,26 @@ download_and_unpack()
     fi
 }
 
+# Uninstalls lua/luarocks
+uninstall()
+{
+    local package_name=$1
+    local package_path=$2
+    local package_dir=$3
+
+    print "Uninstalling ${package_name}"
+
+    exec_command "cd ${package_path}"
+    if [ ! -e "${package_dir}" ]
+    then
+        error "${package_name} is not installed"
+    fi
+
+    exec_command 'rm -r "${package_dir}"'
+
+    print "Successfully uninstalled ${package_name}"
+}
+
 # Returns the platform
 get_platform()
 {
@@ -166,6 +186,14 @@ get_current_lua_version()
     version=${version#$LUA_DIR/}
     version=${version%/bin/lua}
     
+    eval "$1='$version'"
+}
+
+# Returns the current lua version (only the first two numbers)
+get_current_lua_version_short()
+{
+    local version=$(${BIN_DIR}/lua -e 'print(_VERSION:sub(5))')
+
     eval "$1='$version'"
 }
 
@@ -201,12 +229,12 @@ install_lua()
     read -r -p "${lua_dir_name} successfully installed. Do you want to this version? [Y/n]: " choice
     case $choice in
         [yY][eE][sS] | [yY] )
-            use $version
+            use_lua $version
             ;;
     esac 
 }
 
-use()
+use_lua()
 {
     local version=$1
     local lua_name="lua-${version}"
@@ -234,8 +262,13 @@ use()
     then
         exec_command "rm lua"
     fi
+    if [ -L "luac" ]
+    then
+        exec_command "rm luac"
+    fi
 
     exec_command 'ln -s "${LUA_DIR}/${version}/bin/lua"'
+    exec_command 'ln -s "${LUA_DIR}/${version}/bin/luac"'
 
     print "Successfully switched to ${lua_name}"
 }
@@ -245,20 +278,10 @@ uninstall_lua()
     local version=$1
     local lua_name="lua-${version}"
 
-    print "Uninstalling ${lua_name}"
-
-    exec_command "cd ${LUA_DIR}"
-    if [ ! -e "${version}" ]
-    then
-        error "${lua_name} is not installed"
-    fi
-
-    exec_command 'rm -r "${version}"'
-
-    print "Successfully uninstalled ${lua_name}"
+    uninstall $lua_name $LUA_DIR $version
 }
 
-list()
+list_lua()
 {
     installed_versions=($(ls $LUA_DIR/))
     get_current_lua_version current_version
@@ -284,8 +307,7 @@ install_luarocks()
         error "No lua version set"
     fi
 
-    # Getting the lua version upto two number format
-    lua_version_short=$(${BIN_DIR}/lua -e 'print(_VERSION:sub(5))')
+    get_current_lua_version_short lua_version_short
 
     local version=$1
     local luarocks_dir_name="luarocks-${version}"
@@ -313,12 +335,64 @@ install_luarocks()
     exec_command "make build"
     exec_command "make install"
 
-    # read -r -p "${luarocks_dir_name} successfully installed. Do you want to this version? [Y/n]: " choice
-    # case $choice in
-    #     [yY][eE][sS] | [yY] )
-    #         use_luarocks $version $lua_version
-    #         ;;
-    # esac
+    read -r -p "${luarocks_dir_name} successfully installed. Do you want to this version? [Y/n]: " choice
+    case $choice in
+        [yY][eE][sS] | [yY] )
+            use_luarocks $version
+            ;;
+    esac
+}
+
+use_luarocks()
+{
+
+    local version=$1
+    local luarocks_name="luarocks-${version}"
+
+    get_current_lua_version_short lua_version
+
+    print "Switching to ${luarocks_name} with lua version: ${lua_version}"
+
+    # Checking if this version exists
+    exec_command "cd ${LUAROCKS_DIR}"
+
+    if [ ! -e "${version}_${lua_version}" ]
+    then
+        read -r -p "${luarocks_name} is not installed with lua version ${lua_version}. Want to install it? [Y/n]: " choice
+        case $choice in
+            [yY][eE][sS] | [yY] )
+                install_luarocks $version
+                ;;
+            * )
+                error "Unable to use ${luarocks_name}"
+        esac
+        return
+    fi
+
+    exec_command "cd ${BIN_DIR}"
+    if [ -L "luarocks" ]
+    then
+        exec_command "rm luarocks"
+    fi
+    if [ -L "luarocks-admin" ]
+    then
+        exec_command "rm luarocks-admin"
+    fi
+
+    exec_command 'ln -s "${LUAROCKS_DIR}/${version}_${lua_version}/bin/luarocks"'
+    exec_command 'ln -s "${LUAROCKS_DIR}/${version}_${lua_version}/bin/luarocks-admin"'
+
+    print "Successfully switched to ${luarocks_name}"
+}
+
+uninstall_luarocks()
+{
+    local version=$1
+    local luarocks_name="luarocks-${version}"
+
+    get_current_lua_version_short lua_version
+
+    uninstall $luarocks_name $LUAROCKS_DIR "${version}_${lua_version}"
 }
 
 current()
@@ -341,9 +415,9 @@ case $1 in
     "help" )                usage;;
 
     "install" )             install_lua ${@:2};;
-    "use" )                 use ${@:2};;
+    "use" )                 use_lua ${@:2};;
     "uninstall" )           uninstall_lua ${@:2};;
-    "list" )                list;;
+    "list" )                list_lua;;
 
     "install-luarocks")     install_luarocks ${@:2};;
     "use-luarocks" )        use_luarocks ${@:2};;
