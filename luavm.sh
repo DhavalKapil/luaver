@@ -209,6 +209,18 @@ get_current_luarocks_version()
     eval "$1='$version'"
 }
 
+# Returns the short lua version being supported by present luarocks
+get_lua_version_by_current_luarocks()
+{
+    local version=$(readlink $BIN_DIR/luarocks)
+
+    version=${version#$LUAROCKS_DIR/}
+    version=${version%/bin/luarocks}
+    version=${version#*_}
+
+    eval "$1='$version'"
+}
+
 # End of Helper functions
 ###############################################################################
 
@@ -283,6 +295,23 @@ use_lua()
     exec_command 'ln -s "${LUA_DIR}/${version}/bin/luac"'
 
     print "Successfully switched to ${lua_name}"
+
+    # Checking whether luarocks is in use
+    if [ -L "luarocks" ]
+    then
+        # Checking if lua version of luarocks is consistent
+        get_current_lua_version_short lua_version_1
+        get_lua_version_by_current_luarocks lua_version_2
+        get_current_luarocks_version luarocks_version
+
+        if [ $lua_version_1 != $lua_version_2 ]
+        then
+            print "Luarocks in use in inconsistent with this lua version"
+            exec_command "rm luarocks"
+            exec_command "rm luarocks-admin"
+            use_luarocks $luarocks_version
+        fi
+    fi
 }
 
 uninstall_lua()
@@ -403,6 +432,8 @@ uninstall_luarocks()
     local luarocks_name="luarocks-${version}"
 
     get_current_lua_version_short lua_version
+
+    print "${luarocks_name} will be uninstalled for lua version ${lua_version}"
 
     uninstall $luarocks_name $LUAROCKS_DIR "${version}_${lua_version}"
 }
