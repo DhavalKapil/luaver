@@ -4,6 +4,7 @@
 LUAVM_DIR="${HOME}/.luavm"              # The luavm directory
 SRC_DIR="${LUAVM_DIR}/src"              # Where source code is downloaded
 LUA_DIR="${LUAVM_DIR}/lua"              # Where lua source is built
+LUAJIT_DIR="${LUAVM_DIR}/luajit"        # Where luajit source is built
 LUAROCKS_DIR="${LUAVM_DIR}/luarocks"    # Where luarocks source is built
 BIN_DIR="${LUAVM_DIR}/bin"              # Where binaries/soft links are present
 
@@ -53,6 +54,11 @@ init()
     if [ ! -e $LUA_DIR ]
     then
         exec_command "mkdir ${LUA_DIR}"
+    fi
+
+    if [ ! -e $LUAJIT_DIR ]
+    then
+        exec_command "mkdir ${LUAJIT_DIR}"
     fi
 
     if [ ! -e $LUAROCKS_DIR ]
@@ -193,6 +199,17 @@ get_current_lua_version()
 get_current_lua_version_short()
 {
     local version=$(${BIN_DIR}/lua -e 'print(_VERSION:sub(5))')
+
+    eval "$1='$version'"
+}
+
+# Returns the current luajit version
+get_current_luajit_version()
+{
+    local version=$(readlink $BIN_DIR/luajit)
+
+    version=${version#$LUAJIT_DIR/}
+    version=${version%/bin/luajit}
 
     eval "$1='$version'"
 }
@@ -339,6 +356,93 @@ list_lua()
     done
 }
 
+install_luajit()
+{
+    local version=$1
+    local luajit_dir_name="LuaJIT-${version}"
+    local archive_name="${luajit_dir_name}.tar.gz"
+    local url="http://luajit.org/download/${archive_name}"
+
+    print "Installing ${luajit_dir_name}"
+
+    exec_command "cd ${SRC_DIR}"
+
+    download_and_unpack $luajit_dir_name $archive_name $url
+
+    exec_command "cd ${luajit_dir_name}"
+
+    print "Compiling ${luajit_dir_name}"
+
+    exec_command "make PREFIX=${LUAJIT_DIR}/${version}"
+    exec_command "make install PREFIX=${LUAJIT_DIR}/${version}"
+
+    read -r -p "${luajit_dir_name} successfully installed. Do you want to this version? [Y/n]: " choice
+    case $choice in
+        [yY][eE][sS] | [yY] )
+            use_luajit $version
+            ;;
+    esac
+}
+
+use_luajit()
+{
+    local version=$1
+    local luajit_name="LuaJIT-${version}"
+
+    print "Switching to ${luajit_name}"
+
+    # Checking if this version exists
+    exec_command "cd ${LUAJIT_DIR}"
+
+    if [ ! -e $version ]
+    then
+        read -r -p "${luajit_name} is not installed. Want to install it? [Y/n]: " choice
+        case $choice in
+            [yY][eE][sS] | [yY] )
+                install_lua $version
+                ;;
+            * )
+                error "Unable to use ${luajit_name}"
+        esac
+        return
+    fi
+
+    exec_command "cd ${BIN_DIR}"
+    if [ -L "luajit" ]
+    then
+        exec_command "rm luajit"
+    fi
+
+    exec_command 'ln -s "${LUAJIT_DIR}/${version}/bin/luajit"'
+
+    print "Successfully switched to ${luajit_name}"
+}
+
+uninstall_luajit()
+{
+    local version=$1
+    local luajit_name="LuaJIT-${version}"
+
+    uninstall $luajit_name $LUAJIT_DIR $version
+}
+
+list_luajit()
+{
+    installed_versions=($(ls $LUAJIT_DIR/))
+    get_current_luajit_version current_version
+
+    print "Installed versions: "
+    for version in "${installed_versions[@]}"
+    do
+        if [ "${version}" == "${current_version}" ]
+        then
+            print "LuaJIT-${version} <--"
+        else
+            print "LuaJIT-${version}"
+        fi
+    done
+}
+
 install_luarocks()
 {
     # Checking whether any version of lua is installed or not
@@ -462,10 +566,12 @@ list_luarocks()
 current()
 {
     get_current_lua_version lua_version
+    get_current_luajit_version luajit_version
     get_current_luarocks_version luarocks_version
 
     print "Current versions:"
     print "lua-${lua_version}"
+    print "LuaJIT-${luajit_version}"
     print "luarocks-${luarocks_version}"
 }
 
@@ -485,6 +591,11 @@ case $1 in
     "uninstall" )           uninstall_lua ${@:2};;
     "list" )                list_lua;;
 
+    "install-luajit")     install_luajit ${@:2};;
+    "use-luajit" )        use_luajit ${@:2};;
+    "uninstall-luajit" )  uninstall_luajit ${@:2};;
+    "list-luajit" )       list_luajit;;
+
     "install-luarocks")     install_luarocks ${@:2};;
     "use-luarocks" )        use_luarocks ${@:2};;
     "uninstall-luarocks" )  uninstall_luarocks ${@:2};;
@@ -494,4 +605,3 @@ case $1 in
     "version" )             version;;
     * )                     usage;;
 esac
-    
