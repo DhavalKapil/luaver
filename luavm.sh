@@ -26,6 +26,12 @@ print()
     tput sgr0
 }
 
+# Printing formatted text
+print_formatted()
+{
+    printf "${1}\n"
+}
+
 # A wrapper function to execute commands on the terminal and exit on error
 # Called whenever the execution should stop after any error occurs
 exec_command()
@@ -243,7 +249,22 @@ get_lua_version_by_current_luarocks()
 
 usage()
 {
-    :
+    print_formatted "Usage:"
+    print_formatted "   luavm help                          Displays this message"
+    print_formatted "   luavm install <version>             Installs lua-<version>"
+    print_formatted "   luavm use <version>                 Switches to lua-<version>"
+    print_formatted "   luavm uninstall <version>           Uninstalls lua-<version>"
+    print_formatted "   luavm list                          Lists installed lua versions"
+    print_formatted "   luavm install-luajit <version>      Installs LuaJIT-<version>"
+    print_formatted "   luavm use-luajit <version>          Switches to LuaJIT-<version>"
+    print_formatted "   luavm uninstall-luajit <version>    Uninstalls LuaJIT-<version>"
+    print_formatted "   luavm list-luajit                   Lists installed LuaJIT versions"
+    print_formatted "   luavm install-luarocks <version>    Installs luarocks<version>"
+    print_formatted "   luavm use-luarocks <version>        Switches to luarocks-<version>"
+    print_formatted "   luavm uninstall-luarocks <version>  Uninstalls luarocks-<version>"
+    print_formatted "   luavm list-luarocks                 Lists all installed luarocks versions"
+    print_formatted "   luavm current                       Lists present versions being used"
+    print_formatted "   luavm version                       Displays luavm version"
 }
 
 install_lua()
@@ -490,7 +511,6 @@ install_luarocks()
 
 use_luarocks()
 {
-
     local version=$1
     local luarocks_name="luarocks-${version}"
 
