@@ -12,6 +12,19 @@ Command line tool to manage and switch between different versions of lua, LuaJIT
 
 Requires `wget`, `make`.
 
+You may need to install some dependencies:
+
+```sh
+sudo apt-get install libreadline-dev 
+```
+
+Also, if you are planning to install earlier versions of Lua(which are 32 bit) on 64 bit machines, you may need to install some 32 bit libraries first: 
+
+```sh
+sudo apt-get install lib32ncurses5-dev
+```
+
+
 ## Installation
 
 Run the following command to install
@@ -36,9 +49,7 @@ luavm uninstall 5.3.0           # Uninstalls lua version 5.3.0
 
 ```sh
 luavm help
-```
 
-```sh
 Usage:
    luavm help                          Displays this message
    luavm install <version>             Installs lua-<version>
@@ -60,3 +71,7 @@ Usage:
 ## Contribution
 
 Feel free to [file issues](https://github.com/DhavalKapil/luavm/issues) and submit [pull requests](https://github.com/DhavalKapil/luavm/pulls) – contributions are welcome.
+
+## License
+
+luavm is licensed under the [MIT license](http://dhaval.mit-license.org/).

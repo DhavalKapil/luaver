@@ -17,7 +17,7 @@ BIN_DIR="${LUAVM_DIR}/bin"              # Where binaries/soft links are present
 print()
 {
     tput bold
-    echo $1
+    printf "==>  $1\n"
     tput sgr0
 }
 

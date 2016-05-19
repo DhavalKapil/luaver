@@ -22,7 +22,7 @@ error()
 print()
 {
     tput bold
-    echo $1
+    printf "==>  $1\n"
     tput sgr0
 }
 
@@ -98,7 +98,7 @@ download()
         error "'wget' must be installed"
     fi
 
-    print "Download successfull"
+    print "Download successful"
 }
 
 # Unpacks an archive
@@ -113,7 +113,7 @@ unpack()
         error "'tar' must be installed"
     fi
 
-    print "Unpack successfull"
+    print "Unpack successful"
 }
 
 # Downloads and unpacks an archive
@@ -136,7 +136,7 @@ download_and_unpack()
         esac
     fi
 
-    # Downloading the archive only if it does not exists"
+    # Downloading the archive only if it does not exist"
     if [ ! -e $unpack_dir_name ]
     then
         print "Downloading ${unpack_dir_name}"
@@ -249,6 +249,7 @@ get_lua_version_by_current_luarocks()
 
 usage()
 {
+    print_formatted "Lua Version Manager\n"
     print_formatted "Usage:"
     print_formatted "   luavm help                          Displays this message"
     print_formatted "   luavm install <version>             Installs lua-<version>"
@@ -265,6 +266,12 @@ usage()
     print_formatted "   luavm list-luarocks                 Lists all installed luarocks versions"
     print_formatted "   luavm current                       Lists present versions being used"
     print_formatted "   luavm version                       Displays luavm version"
+    print_formatted "\nExamples:\n"
+    print_formatted "   luavm install 5.3.1                 # Installs lua version 5.3.1"
+    print_formatted "   luavm install 5.3.0                 # Installs lua version 5.3.0"
+    print_formatted "   luavm use 5.3.1                     # Switches to lua version 5.3.1"
+    print_formatted "   luavm install-luarocks 2.3.0        # Installs luarocks version 2.3.0"
+    print_formatted "   luavm uninstall 5.3.0               # Uninstalls lua version 5.3.0"
 }
 
 install_lua()
@@ -308,7 +315,7 @@ use_lua()
 
     if [ ! -e $version ]
     then
-        read -r -p "${lua_name} is not installed. Want to install it? [Y/n]: " choice
+        read -r -p "${lua_name} is not installed. Do you want to install it? [Y/n]: " choice
         case $choice in
             [yY][eE][sS] | [yY] )
                 install_lua $version
@@ -344,7 +351,7 @@ use_lua()
 
         if [ $lua_version_1 != $lua_version_2 ]
         then
-            print "Luarocks in use in inconsistent with this lua version"
+            print "Luarocks in use is inconsistent with this lua version"
             exec_command "rm luarocks"
             exec_command "rm luarocks-admin"
             use_luarocks $luarocks_version
