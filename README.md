@@ -1,6 +1,6 @@
 # Lua Version Manager - luavm
 
-Manage and switch between different lua, LuaJIT and luarocks versions easily.
+Command line tool to manage and switch between different versions of lua, LuaJIT and luarocks.
 
 ## Features
 
