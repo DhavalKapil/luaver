@@ -71,7 +71,7 @@ install()
 # Inserts path variables inside bash rc
 set_up_path()
 {
-    local str="export PATH=\"${BIN_DIR}:${PATH}\""
+    local str="export PATH=\"${BIN_DIR}:\${PATH}\""
     local shell_type="$(basename $SHELL)"
     print "Detected SHELL_TYPE: ${shell_type}"
     
@@ -95,13 +95,13 @@ set_up_path()
         print "Unable to detect profile(no ~/.bashrc, ~/.zshrc found)"
         print "Add the following at the end of the correct file yourself:"
         print "${str}"
-        print "PLease file an issue for this on the github repository"
+        print "You can start using it in a new terminal or run 'source ~/.bashrc' in present terminal"
     else
         if ! command grep -qc "${str}" "${profile}"
         then
             print "Appending '${str}' at the end of ${profile}"
             printf "\n${str}\n" >> $profile
-            print "You can start using it in a new terminal or run 'source ~/.bashrc' in present terminal"
+            print "You can start using it in a new terminal or run 'source ${profile}' in present terminal"
         fi
     fi
 }
