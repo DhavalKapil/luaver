@@ -357,7 +357,16 @@ uninstall_lua()
     local version=$1
     local lua_name="lua-${version}"
 
+    get_current_lua_version current_version
+
     uninstall $lua_name $LUA_DIR $version
+
+    if [ "${version}" == "${current_version}" ]
+    then
+        exec_command "cd ${BIN_DIR}"
+        exec_command "rm lua"
+        exec_command "rm luac"
+    fi
 }
 
 list_lua()
@@ -444,7 +453,15 @@ uninstall_luajit()
     local version=$1
     local luajit_name="LuaJIT-${version}"
 
+    get_current_luajit_version current_version
+
     uninstall $luajit_name $LUAJIT_DIR $version
+
+    if [ "${version}" == "${current_version}" ]
+    then
+        exec_command "cd ${BIN_DIR}"
+        exec_command "rm luajit"
+    fi
 }
 
 list_luajit()
@@ -556,10 +573,18 @@ uninstall_luarocks()
     local luarocks_name="luarocks-${version}"
 
     get_current_lua_version_short lua_version
+    get_current_luarocks_version current_version
 
     print "${luarocks_name} will be uninstalled for lua version ${lua_version}"
 
     uninstall $luarocks_name $LUAROCKS_DIR "${version}_${lua_version}"
+
+    if [ "${version}" == "${current_version}" ]
+    then
+        exec_command "cd ${BIN_DIR}"
+        exec_command "rm luarocks"
+        exec_command "rm luarocks-admin"
+    fi
 }
 
 list_luarocks()
@@ -590,9 +615,19 @@ current()
     get_current_luarocks_version luarocks_version
 
     print "Current versions:"
-    print "lua-${lua_version}"
-    print "LuaJIT-${luajit_version}"
-    print "luarocks-${luarocks_version}"
+
+    if [ ! "${lua_version}" == "" ]
+    then
+        print "lua-${lua_version}"
+    fi
+    if [ ! "${luajit_version}" == "" ]
+    then
+        print "LuaJIT-${luajit_version}"
+    fi
+    if [ ! "${luarocks_version}" == "" ]
+    then
+        print "luarocks-${luarocks_version}"
+    fi
 }
 
 version()
@@ -611,10 +646,10 @@ case $1 in
     "uninstall" )           uninstall_lua ${@:2};;
     "list" )                list_lua;;
 
-    "install-luajit")     install_luajit ${@:2};;
-    "use-luajit" )        use_luajit ${@:2};;
-    "uninstall-luajit" )  uninstall_luajit ${@:2};;
-    "list-luajit" )       list_luajit;;
+    "install-luajit")       install_luajit ${@:2};;
+    "use-luajit" )          use_luajit ${@:2};;
+    "uninstall-luajit" )    uninstall_luajit ${@:2};;
+    "list-luajit" )         list_luajit;;
 
     "install-luarocks")     install_luarocks ${@:2};;
     "use-luarocks" )        use_luarocks ${@:2};;
