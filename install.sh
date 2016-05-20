@@ -101,8 +101,9 @@ set_up_path()
         then
             print "Appending '${str}' at the end of ${profile}"
             printf "\n${str}\n" >> $profile
-            print "You can start using it in a new terminal or run 'source ${profile}' in present terminal"
         fi
+        source $profile
+        cd -
     fi
 }
 
