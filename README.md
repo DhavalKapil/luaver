@@ -30,7 +30,7 @@ sudo apt-get install lib32ncurses5-dev
 Run the following command to install
 
 ```sh
-curl https://raw.githubusercontent.com/DhavalKapil/luavm/master/install.sh | bash
+curl https://raw.githubusercontent.com/DhavalKapil/luavm/master/install.sh | . ./install.sh
 ```
 
 ## Usage

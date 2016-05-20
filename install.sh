@@ -89,20 +89,20 @@ set_up_path()
             profile="$HOME/.zshrc"
         fi
     fi
-    
+
     if [ "${profile}" == "" ]
     then
         print "Unable to detect profile(no ~/.bashrc, ~/.zshrc found)"
         print "Add the following at the end of the correct file yourself:"
         print "${str}"
-        print "You can start using it in a new terminal or run 'source ~/.bashrc' in present terminal"
     else
         if ! command grep -qc "${str}" "${profile}"
         then
             print "Appending '${str}' at the end of ${profile}"
             printf "\n${str}\n" >> $profile
-            print "You can start using it in a new terminal or run 'source ${profile}' in present terminal"
         fi
+        source $profile
+        cd ~
     fi
 }
 
