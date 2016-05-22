@@ -1,0 +1,12 @@
+language: generic
+addons:
+  apt_packages:
+  - zsh
+  - ksh
+before_install:
+  - wget --version
+  - curl --version
+install:
+  - curl https://raw.githubusercontent.com/DhavalKapil/luavm/master/install.sh && . ./install.sh
+script:
+  - ./test.sh
