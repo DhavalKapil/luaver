@@ -1,5 +1,7 @@
 # Lua Version Manager - luavm
 
+[![Build Status](https://travis-ci.org/DhavalKapil/luavm.svg?branch=master)](https://travis-ci.org/DhavalKapil/luavm)
+
 Command line tool to manage and switch between different versions of lua, LuaJIT and luarocks.
 
 ## Features

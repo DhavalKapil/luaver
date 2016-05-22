@@ -7,6 +7,6 @@ before_install:
   - wget --version
   - curl --version
 install:
-  - curl https://raw.githubusercontent.com/DhavalKapil/luavm/master/install.sh && . ./install.sh
+  - curl https://raw.githubusercontent.com/DhavalKapil/luavm/master/install.sh -o install.sh && . ./install.sh
 script:
   - ./test.sh
