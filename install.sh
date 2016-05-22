@@ -103,8 +103,9 @@ set_up_path()
             printf "\n${str}\n" >> $profile
         fi
         source $profile
-        cd -
     fi
+    
+    cd -
 }
 
 print "Installing '${PROGRAM}'..."
