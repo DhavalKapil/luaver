@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# Lua Version Manager
+#
+# Developed by Dhaval Kapil <me@dhavalkapil.com>
+#
+# MIT license http://www.opensource.org/licenses/mit-license.php
+
+VERSION="1.0.0-alpha"
+
 # Directories to be used
 LUAVM_DIR="${HOME}/.luavm"              # The luavm directory
 SRC_DIR="${LUAVM_DIR}/src"              # Where source code is downloaded
@@ -74,7 +82,7 @@ init()
 
     if [ ! -e $BIN_DIR ]
     then
-        exec_command "mkdir ${BIN_DIRs}"
+        exec_command "mkdir ${BIN_DIR}"
     fi
 }
 
@@ -249,8 +257,9 @@ get_lua_version_by_current_luarocks()
 
 usage()
 {
-    print_formatted "Lua Version Manager\n"
-    print_formatted "Usage:"
+    print_formatted ""
+    version
+    print_formatted "Usage:\n"
     print_formatted "   luavm help                          Displays this message"
     print_formatted "   luavm install <version>             Installs lua-<version>"
     print_formatted "   luavm use <version>                 Switches to lua-<version>"
@@ -639,7 +648,8 @@ current()
 
 version()
 {
-    :
+    print_formatted "Lua Version Manager ${VERSION}\n"
+    print_formatted "Developed by Dhaval Kapil <me@dhavalkapil.com>\n"
 }
 
 # Init environment
