@@ -9,7 +9,6 @@ SRC_DIR="${LUAVM_DIR}/src"              # Where source code is downloaded
 LUA_DIR="${LUAVM_DIR}/lua"              # Where lua source is built
 LUAJIT_DIR="${LUAVM_DIR}/luajit"        # Where luajit source is built
 LUAROCKS_DIR="${LUAVM_DIR}/luarocks"    # Where luarocks source is built
-BIN_DIR="${LUAVM_DIR}/bin"              # Where binaries/soft links are present
 
 # Initializes directories
 
@@ -45,10 +44,6 @@ init()
     then
         mkdir $LUAROCKS_DIR
     fi
-    if [ ! -e $BIN_DIR ]
-    then
-        mkdir $BIN_DIR
-    fi
     print "Directory structure built..."
 }
 
@@ -56,7 +51,7 @@ init()
 install()
 {
     print "Downloading '${PROGRAM}'..."
-    cd $BIN_DIR
+    cd $LUAVM_DIR
     if [ -e $PROGRAM ]
     then
         print "Existing '${PROGRAM}' detected. Removing it..."
@@ -71,7 +66,7 @@ install()
 # Inserts path variables inside bash rc
 set_up_path()
 {
-    local str="export PATH=\"${BIN_DIR}:\${PATH}\""
+    local str="[ -s ${LUAVM_DIR}/${PROGRAM} ] && . ${LUAVM_DIR}/${PROGRAM}"
     local shell_type="$(basename $SHELL)"
     print "Detected SHELL_TYPE: ${shell_type}"
     
