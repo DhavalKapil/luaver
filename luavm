@@ -14,7 +14,6 @@ SRC_DIR="${LUAVM_DIR}/src"              # Where source code is downloaded
 LUA_DIR="${LUAVM_DIR}/lua"              # Where lua source is built
 LUAJIT_DIR="${LUAVM_DIR}/luajit"        # Where luajit source is built
 LUAROCKS_DIR="${LUAVM_DIR}/luarocks"    # Where luarocks source is built
-BIN_DIR="${LUAVM_DIR}/bin"              # Where binaries/soft links are present
 
 ###############################################################################
 # Helper functions
@@ -78,11 +77,6 @@ init()
     if [ ! -e $LUAROCKS_DIR ]
     then
         exec_command "mkdir ${LUAROCKS_DIR}"
-    fi
-
-    if [ ! -e $BIN_DIR ]
-    then
-        exec_command "mkdir ${BIN_DIR}"
     fi
 }
 
@@ -155,6 +149,25 @@ download_and_unpack()
     fi
 }
 
+# Removes existing strings starting with a prefix in PATH
+remove_previous_paths()
+{
+    local prefix=$1
+
+    local new_path=$(echo $PATH | sed \
+        -e "s#${prefix}/[^/]*/bin[^:]*:##g" \
+        -e "s#:${prefix}/[^/]*/bin[^:]*##g" \
+        -e "s#${prefix}/[^/]*/bin[^:]*##g")
+
+    export PATH=$new_path
+}
+
+# Append to PATH
+append_path()
+{
+    export PATH="${1}:${PATH}"
+}
+
 # Uninstalls lua/luarocks
 uninstall()
 {
@@ -201,7 +214,7 @@ get_platform()
 # Returns the current lua version
 get_current_lua_version()
 {
-    local version=$(readlink $BIN_DIR/lua)
+    local version=$(which lua)
 
     version=${version#$LUA_DIR/}
     version=${version%/bin/lua}
@@ -212,7 +225,7 @@ get_current_lua_version()
 # Returns the current lua version (only the first two numbers)
 get_current_lua_version_short()
 {
-    local version=$(${BIN_DIR}/lua -e 'print(_VERSION:sub(5))')
+    local version=$(lua -e 'print(_VERSION:sub(5))')
 
     eval "$1='$version'"
 }
@@ -220,7 +233,7 @@ get_current_lua_version_short()
 # Returns the current luajit version
 get_current_luajit_version()
 {
-    local version=$(readlink $BIN_DIR/luajit)
+    local version=$(which luajit)
 
     version=${version#$LUAJIT_DIR/}
     version=${version%/bin/luajit}
@@ -231,7 +244,7 @@ get_current_luajit_version()
 # Returns the current luarocks version
 get_current_luarocks_version()
 {
-    local version=$(readlink $BIN_DIR/luarocks)
+    local version=$(which luarocks)
 
     version=${version#$LUAROCKS_DIR/}
     version=${version%/bin/luarocks}
@@ -243,7 +256,7 @@ get_current_luarocks_version()
 # Returns the short lua version being supported by present luarocks
 get_lua_version_by_current_luarocks()
 {
-    local version=$(readlink $BIN_DIR/luarocks)
+    local version=$(which luarocks)
 
     version=${version#$LUAROCKS_DIR/}
     version=${version%/bin/luarocks}
@@ -302,7 +315,7 @@ install_lua()
 
     print "Compiling ${lua_dir_name}"
 
-    exec_command "make ${platform} install INSTALL_TOP=${LUA_DIR}/${version}/"
+    exec_command "make ${platform} install INSTALL_TOP=${LUA_DIR}/${version}"
 
     read -r -p "${lua_dir_name} successfully installed. Do you want to this version? [Y/n]: " choice
     case $choice in
@@ -335,18 +348,8 @@ use_lua()
         return
     fi
 
-    exec_command "cd ${BIN_DIR}"
-    if [ -L "lua" ]
-    then
-        exec_command "rm lua"
-    fi
-    if [ -L "luac" ]
-    then
-        exec_command "rm luac"
-    fi
-
-    exec_command 'ln -s "${LUA_DIR}/${version}/bin/lua"'
-    exec_command 'ln -s "${LUA_DIR}/${version}/bin/luac"'
+    remove_previous_paths "${LUA_DIR}"
+    append_path "${LUA_DIR}/${version}/bin"
 
     print "Successfully switched to ${lua_name}"
 
@@ -379,9 +382,7 @@ uninstall_lua()
 
     if [ "${version}" == "${current_version}" ]
     then
-        exec_command "cd ${BIN_DIR}"
-        exec_command "rm lua"
-        exec_command "rm luac"
+        remove_previous_paths "${LUA_DIR}"
     fi
 }
 
@@ -453,13 +454,8 @@ use_luajit()
         return
     fi
 
-    exec_command "cd ${BIN_DIR}"
-    if [ -L "luajit" ]
-    then
-        exec_command "rm luajit"
-    fi
-
-    exec_command 'ln -s "${LUAJIT_DIR}/${version}/bin/luajit"'
+    remove_previous_paths "${LUAJIT_DIR}"
+    append_path "${LUAJIT_DIR}/${version}/bin"
 
     print "Successfully switched to ${luajit_name}"
 }
@@ -475,8 +471,7 @@ uninstall_luajit()
 
     if [ "${version}" == "${current_version}" ]
     then
-        exec_command "cd ${BIN_DIR}"
-        exec_command "rm luajit"
+        remove_previous_paths "${LUAJIT_DIR}"
     fi
 }
 
@@ -567,18 +562,8 @@ use_luarocks()
         return
     fi
 
-    exec_command "cd ${BIN_DIR}"
-    if [ -L "luarocks" ]
-    then
-        exec_command "rm luarocks"
-    fi
-    if [ -L "luarocks-admin" ]
-    then
-        exec_command "rm luarocks-admin"
-    fi
-
-    exec_command 'ln -s "${LUAROCKS_DIR}/${version}_${lua_version}/bin/luarocks"'
-    exec_command 'ln -s "${LUAROCKS_DIR}/${version}_${lua_version}/bin/luarocks-admin"'
+    remove_previous_paths "${LUAROCKS_DIR}"
+    append_path "${LUAROCKS_DIR}/${version}_${lua_version}/bin"
 
     print "Successfully switched to ${luarocks_name}"
 }
@@ -597,9 +582,7 @@ uninstall_luarocks()
 
     if [ "${version}" == "${current_version}" ]
     then
-        exec_command "cd ${BIN_DIR}"
-        exec_command "rm luarocks"
-        exec_command "rm luarocks-admin"
+        remove_previous_paths "${LUAROCKS_DIR}"
     fi
 }
 
@@ -655,25 +638,28 @@ version()
 # Init environment
 init
 
-case $1 in
-    "help" )                usage;;
+luavm()
+{
+    case $1 in
+        "help" )                usage;;
 
-    "install" )             install_lua ${@:2};;
-    "use" )                 use_lua ${@:2};;
-    "uninstall" )           uninstall_lua ${@:2};;
-    "list" )                list_lua;;
+        "install" )             install_lua ${@:2};;
+        "use" )                 use_lua ${@:2};;
+        "uninstall" )           uninstall_lua ${@:2};;
+        "list" )                list_lua;;
 
-    "install-luajit")       install_luajit ${@:2};;
-    "use-luajit" )          use_luajit ${@:2};;
-    "uninstall-luajit" )    uninstall_luajit ${@:2};;
-    "list-luajit" )         list_luajit;;
+        "install-luajit")       install_luajit ${@:2};;
+        "use-luajit" )          use_luajit ${@:2};;
+        "uninstall-luajit" )    uninstall_luajit ${@:2};;
+        "list-luajit" )         list_luajit;;
 
-    "install-luarocks")     install_luarocks ${@:2};;
-    "use-luarocks" )        use_luarocks ${@:2};;
-    "uninstall-luarocks" )  uninstall_luarocks ${@:2};;
-    "list-luarocks" )       list_luarocks;;
+        "install-luarocks")     install_luarocks ${@:2};;
+        "use-luarocks" )        use_luarocks ${@:2};;
+        "uninstall-luarocks" )  uninstall_luarocks ${@:2};;
+        "list-luarocks" )       list_luarocks;;
 
-    "current" )             current;;
-    "version" )             version;;
-    * )                     usage;;
-esac
+        "current" )             current;;
+        "version" )             version;;
+        * )                     usage;;
+    esac
+}
