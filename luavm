@@ -8,14 +8,21 @@
 
 VERSION="1.0.0-alpha"
 
-# Directories to be used
-LUAVM_DIR="${HOME}/.luavm"              # The luavm directory
-SRC_DIR="${LUAVM_DIR}/src"              # Where source code is downloaded
-LUA_DIR="${LUAVM_DIR}/lua"              # Where lua source is built
-LUAJIT_DIR="${LUAVM_DIR}/luajit"        # Where luajit source is built
-LUAROCKS_DIR="${LUAVM_DIR}/luarocks"    # Where luarocks source is built
+# Directories and files to be used
+
+LUAVM_DIR="${HOME}/.luavm"                        # The luavm directory
+SRC_DIR="${LUAVM_DIR}/src"                        # Source code is downloaded
+LUA_DIR="${LUAVM_DIR}/lua"                        # Lua source is built
+LUA_DEFAULT_FILE="${LUA_DIR}/default"             # Lua default version
+LUAJIT_DIR="${LUAVM_DIR}/luajit"                  # Luajit source is built
+LUAJIT_DEFAULT_FILE="${LUAJIT_DIR}/default"       # Luajit default version
+LUAROCKS_DIR="${LUAVM_DIR}/luarocks"              # Luarocks source is built
+LUAROCKS_DEFAULT_FILE="${LUAROCKS_DIR}/default"   # Luarocks default version
 
 present_dir=""
+
+# Verbose level
+verbose=0
 
 ###############################################################################
 # Helper functions
@@ -31,9 +38,12 @@ error()
 # Printing bold text - TODO
 print()
 {
-    tput bold
-    printf "==>  $1\n"
-    tput sgr0
+    if [ ! $verbose == 0 ]
+    then
+        tput bold
+        printf "==>  $1\n"
+        tput sgr0
+    fi
 }
 
 # Printing formatted text
@@ -57,6 +67,8 @@ exec_command()
 # Perform some initialization
 init()
 {
+    local present_dir=$(pwd)
+
     if [ ! -e $LUAVM_DIR ]
     then
         exec_command "mkdir ${LUAVM_DIR}"
@@ -81,6 +93,28 @@ init()
     then
         exec_command "mkdir ${LUAROCKS_DIR}"
     fi
+
+    if [ -f $LUA_DEFAULT_FILE ]
+    then
+        local lua_version=$(cat $LUA_DEFAULT_FILE)
+        use_lua $lua_version
+    fi
+
+    if [ -f $LUAJIT_DEFAULT_FILE ]
+    then
+        local luajit_version=$(cat $LUAJIT_DEFAULT_FILE)
+        use_luajit $luajit_version
+    fi
+
+    if [ -f $LUAROCKS_DEFAULT_FILE ]
+    then
+        local luarocks_version=$(cat $LUAROCKS_DEFAULT_FILE)
+        use_luarocks $luarocks_version
+    fi
+
+    verbose=1
+
+    exec_command "cd ${present_dir}"
 }
 
 # Checking whether a particular tool exists or not
@@ -281,27 +315,30 @@ usage()
     print_formatted ""
     version
     print_formatted "Usage:\n"
-    print_formatted "   luavm help                          Displays this message"
-    print_formatted "   luavm install <version>             Installs lua-<version>"
-    print_formatted "   luavm use <version>                 Switches to lua-<version>"
-    print_formatted "   luavm uninstall <version>           Uninstalls lua-<version>"
-    print_formatted "   luavm list                          Lists installed lua versions"
-    print_formatted "   luavm install-luajit <version>      Installs LuaJIT-<version>"
-    print_formatted "   luavm use-luajit <version>          Switches to LuaJIT-<version>"
-    print_formatted "   luavm uninstall-luajit <version>    Uninstalls LuaJIT-<version>"
-    print_formatted "   luavm list-luajit                   Lists installed LuaJIT versions"
-    print_formatted "   luavm install-luarocks <version>    Installs luarocks<version>"
-    print_formatted "   luavm use-luarocks <version>        Switches to luarocks-<version>"
-    print_formatted "   luavm uninstall-luarocks <version>  Uninstalls luarocks-<version>"
-    print_formatted "   luavm list-luarocks                 Lists all installed luarocks versions"
-    print_formatted "   luavm current                       Lists present versions being used"
-    print_formatted "   luavm version                       Displays luavm version"
+    print_formatted "   luavm help                              Displays this message"
+    print_formatted "   luavm install <version>                 Installs lua-<version>"
+    print_formatted "   luavm use <version>                     Switches to lua-<version>"
+    print_formatted "   luavm set-default <version>             Sets <version> as default for lua"
+    print_formatted "   luavm uninstall <version>               Uninstalls lua-<version>"
+    print_formatted "   luavm list                              Lists installed lua versions"
+    print_formatted "   luavm install-luajit <version>          Installs LuaJIT-<version>"
+    print_formatted "   luavm use-luajit <version>              Switches to LuaJIT-<version>"
+    print_formatted "   luavm set-default-luajit <version>      Sets <version> as default for LuaJIT"
+    print_formatted "   luavm uninstall-luajit <version>        Uninstalls LuaJIT-<version>"
+    print_formatted "   luavm list-luajit                       Lists installed LuaJIT versions"
+    print_formatted "   luavm install-luarocks <version>        Installs luarocks<version>"
+    print_formatted "   luavm use-luarocks <version>            Switches to luarocks-<version>"
+    print_formatted "   luavm set-default-luarocks <version>    Sets <version> as default for luarocks"
+    print_formatted "   luavm uninstall-luarocks <version>      Uninstalls luarocks-<version>"
+    print_formatted "   luavm list-luarocks                     Lists all installed luarocks versions"
+    print_formatted "   luavm current                           Lists present versions being used"
+    print_formatted "   luavm version                           Displays luavm version"
     print_formatted "\nExamples:\n"
-    print_formatted "   luavm install 5.3.1                 # Installs lua version 5.3.1"
-    print_formatted "   luavm install 5.3.0                 # Installs lua version 5.3.0"
-    print_formatted "   luavm use 5.3.1                     # Switches to lua version 5.3.1"
-    print_formatted "   luavm install-luarocks 2.3.0        # Installs luarocks version 2.3.0"
-    print_formatted "   luavm uninstall 5.3.0               # Uninstalls lua version 5.3.0"
+    print_formatted "   luavm install 5.3.1                     # Installs lua version 5.3.1"
+    print_formatted "   luavm install 5.3.0                     # Installs lua version 5.3.0"
+    print_formatted "   luavm use 5.3.1                         # Switches to lua version 5.3.1"
+    print_formatted "   luavm install-luarocks 2.3.0            # Installs luarocks version 2.3.0"
+    print_formatted "   luavm uninstall 5.3.0                   # Uninstalls lua version 5.3.0"
 }
 
 install_lua()
@@ -325,7 +362,7 @@ install_lua()
 
     exec_command "make ${platform} install INSTALL_TOP=${LUA_DIR}/${version}"
 
-    read -r -p "${lua_dir_name} successfully installed. Do you want to this version? [Y/n]: " choice
+    read -r -p "${lua_dir_name} successfully installed. Do you want use to this version? [Y/n]: " choice
     case $choice in
         [yY][eE][sS] | [yY] )
             use_lua $version
@@ -377,6 +414,14 @@ use_lua()
             use_luarocks $luarocks_version
         fi
     fi
+}
+
+set_default_lua()
+{
+    local version=$1
+
+    exec_command "echo ${version} > ${LUA_DEFAULT_FILE}"
+    print "Default version set for lua: ${version}"
 }
 
 uninstall_lua()
@@ -431,7 +476,7 @@ install_luajit()
     exec_command "make PREFIX=${LUAJIT_DIR}/${version}"
     exec_command "make install PREFIX=${LUAJIT_DIR}/${version}"
 
-    read -r -p "${luajit_dir_name} successfully installed. Do you want to this version? [Y/n]: " choice
+    read -r -p "${luajit_dir_name} successfully installed. Do you want to use this version? [Y/n]: " choice
     case $choice in
         [yY][eE][sS] | [yY] )
             use_luajit $version
@@ -466,6 +511,14 @@ use_luajit()
     append_path "${LUAJIT_DIR}/${version}/bin"
 
     print "Successfully switched to ${luajit_name}"
+}
+
+set_default_luajit()
+{
+    local version=$1
+
+    exec_command "echo ${version} > ${LUAJIT_DEFAULT_FILE}"
+    print "Default version set for luajit: ${version}"
 }
 
 uninstall_luajit()
@@ -537,7 +590,7 @@ install_luarocks()
     exec_command "make build"
     exec_command "make install"
 
-    read -r -p "${luarocks_dir_name} successfully installed. Do you want to this version? [Y/n]: " choice
+    read -r -p "${luarocks_dir_name} successfully installed. Do you want to use this version? [Y/n]: " choice
     case $choice in
         [yY][eE][sS] | [yY] )
             use_luarocks $version
@@ -582,6 +635,14 @@ use_luarocks()
     eval $(luarocks path)
 
     print "Successfully switched to ${luarocks_name}"
+}
+
+set_default_luarocks()
+{
+    local version=$1
+
+    exec_command "echo ${version} > ${LUAROCKS_DEFAULT_FILE}"
+    print "Default version set for luarocks: ${version}"
 }
 
 uninstall_luarocks()
@@ -659,26 +720,29 @@ luavm()
     local present_dir=$(pwd)
 
     case $1 in
-        "help" )                usage;;
+        "help" )                    usage;;
 
-        "install" )             install_lua ${@:2};;
-        "use" )                 use_lua ${@:2};;
-        "uninstall" )           uninstall_lua ${@:2};;
-        "list" )                list_lua;;
+        "install" )                 install_lua ${@:2};;
+        "use" )                     use_lua ${@:2};;
+        "set-default" )             set_default_lua ${@:2};;
+        "uninstall" )               uninstall_lua ${@:2};;
+        "list" )                    list_lua;;
 
-        "install-luajit")       install_luajit ${@:2};;
-        "use-luajit" )          use_luajit ${@:2};;
-        "uninstall-luajit" )    uninstall_luajit ${@:2};;
-        "list-luajit" )         list_luajit;;
+        "install-luajit")           install_luajit ${@:2};;
+        "use-luajit" )              use_luajit ${@:2};;
+        "set-default-luajit" )      set_default_luajit ${@:2};;
+        "uninstall-luajit" )        uninstall_luajit ${@:2};;
+        "list-luajit" )             list_luajit;;
 
-        "install-luarocks")     install_luarocks ${@:2};;
-        "use-luarocks" )        use_luarocks ${@:2};;
-        "uninstall-luarocks" )  uninstall_luarocks ${@:2};;
-        "list-luarocks" )       list_luarocks;;
+        "install-luarocks")         install_luarocks ${@:2};;
+        "use-luarocks" )            use_luarocks ${@:2};;
+        "set-default-luarocks" )    set_default_luarocks ${@:2};;
+        "uninstall-luarocks" )      uninstall_luarocks ${@:2};;
+        "list-luarocks" )           list_luarocks;;
 
-        "current" )             current;;
-        "version" )             version;;
-        * )                     usage;;
+        "current" )                 current;;
+        "version" )                 version;;
+        * )                         usage;;
     esac
 
     exec_command "cd ${present_dir}"
