@@ -22,7 +22,7 @@ LUAROCKS_DIR="${LUAVM_DIR}/luarocks"    # Where luarocks source is built
 error()
 {
     printf "$1\n" 1>&2
-    exit 1
+    kill -INT $$
 }
 
 # Printing bold text - TODO
@@ -225,7 +225,12 @@ get_current_lua_version()
 # Returns the current lua version (only the first two numbers)
 get_current_lua_version_short()
 {
-    local version=$(lua -e 'print(_VERSION:sub(5))')
+    local version=""
+
+    if exists lua
+    then
+        version=$(lua -e 'print(_VERSION:sub(5))')
+    fi
 
     eval "$1='$version'"
 }
@@ -544,6 +549,11 @@ use_luarocks()
 
     get_current_lua_version_short lua_version
 
+    if [ "${lua_version}" == "" ]
+    then
+        error "You need to first switch to a lua installation"
+    fi
+
     print "Switching to ${luarocks_name} with lua version: ${lua_version}"
 
     # Checking if this version exists
@@ -564,6 +574,9 @@ use_luarocks()
 
     remove_previous_paths "${LUAROCKS_DIR}"
     append_path "${LUAROCKS_DIR}/${version}_${lua_version}/bin"
+
+    # Setting up LUA_PATH and LUA_CPATH
+    eval $(luarocks path)
 
     print "Successfully switched to ${luarocks_name}"
 }
