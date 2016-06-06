@@ -53,21 +53,27 @@ luavm uninstall 5.3.0           # Uninstalls lua version 5.3.0
 luavm help
 
 Usage:
-   luavm help                          Displays this message
-   luavm install <version>             Installs lua-<version>
-   luavm use <version>                 Switches to lua-<version>
-   luavm uninstall <version>           Uninstalls lua-<version>
-   luavm list                          Lists installed lua versions
-   luavm install-luajit <version>      Installs LuaJIT-<version>
-   luavm use-luajit <version>          Switches to LuaJIT-<version>
-   luavm uninstall-luajit <version>    Uninstalls LuaJIT-<version>
-   luavm list-luajit                   Lists installed LuaJIT versions
-   luavm install-luarocks <version>    Installs luarocks<version>
-   luavm use-luarocks <version>        Switches to luarocks-<version>
-   luavm uninstall-luarocks <version>  Uninstalls luarocks-<version>
-   luavm list-luarocks                 Lists all installed luarocks versions
-   luavm current                       Lists present versions being used
-   luavm version                       Displays luavm version
+   luavm help                              Displays this message
+   luavm install <version>                 Installs lua-<version>
+   luavm use <version>                     Switches to lua-<version>
+   luavm set-default <version>             Sets <version> as default for lua
+   luavm unset-default                     Unsets the default lua version
+   luavm uninstall <version>               Uninstalls lua-<version>
+   luavm list                              Lists installed lua versions
+   luavm install-luajit <version>          Installs LuaJIT-<version>
+   luavm use-luajit <version>              Switches to LuaJIT-<version>
+   luavm set-default-luajit <version>      Sets <version> as default for LuaJIT
+   luavm unset-default-luajit              Unsets the default LuaJIT version
+   luavm uninstall-luajit <version>        Uninstalls LuaJIT-<version>
+   luavm list-luajit                       Lists installed LuaJIT versions
+   luavm install-luarocks <version>        Installs luarocks<version>
+   luavm use-luarocks <version>            Switches to luarocks-<version>
+   luavm set-default-luarocks <version>    Sets <version> as default for luarocks
+   luavm unset-default-luarocks            Unsets the default luarocks version
+   luavm uninstall-luarocks <version>      Uninstalls luarocks-<version>
+   luavm list-luarocks                     Lists all installed luarocks versions
+   luavm current                           Lists present versions being used
+   luavm version                           Displays luavm version
 ```
 
 ## Contribution
