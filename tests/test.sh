@@ -31,3 +31,12 @@ if test "${version_string#*2.3.0}" == "${version_string}"
 then
     exit 1
 fi
+
+luarocks install --server=http://luarocks.org/dev elasticsearch
+
+lua luarocks_test.lua
+
+if [ $? == 1 ]
+then
+	exit 1
+fi
