@@ -33,7 +33,7 @@ then
 fi
 
 luarocks install --server=http://luarocks.org/dev elasticsearch
-
+pwd
 lua luarocks_test.lua
 
 if [ $? == 1 ]
