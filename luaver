@@ -1,0 +1,776 @@
+#!/bin/bash
+
+# Lua Version Manager
+#
+# Developed by Dhaval Kapil <me@dhavalkapil.com>
+#
+# MIT license http://www.opensource.org/licenses/mit-license.php
+
+__luaver_VERSION="1.0.0-alpha"
+
+# Directories and files to be used
+
+__luaver_LUAVER_DIR="${HOME}/.luaver"                                      # The luaver directory
+__luaver_SRC_DIR="${__luaver_LUAVER_DIR}/src"                              # Source code is downloaded
+__luaver_LUA_DIR="${__luaver_LUAVER_DIR}/lua"                              # Lua source is built
+__luaver_LUA_DEFAULT_FILE="${__luaver_LUAVER_DIR}/default_lua"             # Lua default version
+__luaver_LUAJIT_DIR="${__luaver_LUAVER_DIR}/luajit"                        # Luajit source is built
+__luaver_LUAJIT_DEFAULT_FILE="${__luaver_LUAVER_DIR}/default_luajit"       # Luajit default version
+__luaver_LUAROCKS_DIR="${__luaver_LUAVER_DIR}/luarocks"                    # Luarocks source is built
+__luaver_LUAROCKS_DEFAULT_FILE="${__luaver_LUAVER_DIR}/default_luarocks"   # Luarocks default version
+
+__luaver_present_dir=""
+
+# Verbose level
+__luaver_verbose=0
+
+###############################################################################
+# Helper functions
+
+# Error handling function
+__luaver_error()
+{
+    printf "$1\n" 1>&2
+    __luaver_exec_command "cd ${__luaver_present_dir}"
+    kill -INT $$
+}
+
+# Printing bold text - TODO
+__luaver_print()
+{
+    if [ ! $__luaver_verbose == 0 ]
+    then
+        tput bold
+        printf "==>  $1\n"
+        tput sgr0
+    fi
+}
+
+# Printing formatted text
+__luaver_print_formatted()
+{
+    printf "${1}\n"
+}
+
+# A wrapper function to execute commands on the terminal and exit on error
+# Called whenever the execution should stop after any error occurs
+__luaver_exec_command()
+{
+    eval $1
+
+    if [ ! $? -eq 0 ]
+    then
+        __luaver_error "Unable to execute the following command:\n$1\nExiting"
+    fi
+}
+
+# Perform some initialization
+__luaver_init()
+{
+    __luaver_present_dir=$(pwd)
+
+    if [ ! -e $__luaver_LUAVER_DIR ]
+    then
+        __luaver_exec_command "mkdir ${__luaver_LUAVER_DIR}"
+    fi
+
+    if [ ! -e $__luaver_SRC_DIR ]
+    then
+        __luaver_exec_command "mkdir ${__luaver_SRC_DIR}"
+    fi
+
+    if [ ! -e $__luaver_LUA_DIR ]
+    then
+        __luaver_exec_command "mkdir ${__luaver_LUA_DIR}"
+    fi
+
+    if [ ! -e $__luaver_LUAJIT_DIR ]
+    then
+        __luaver_exec_command "mkdir ${__luaver_LUAJIT_DIR}"
+    fi
+
+    if [ ! -e $__luaver_LUAROCKS_DIR ]
+    then
+        __luaver_exec_command "mkdir ${__luaver_LUAROCKS_DIR}"
+    fi
+
+    if [ -f $__luaver_LUA_DEFAULT_FILE ]
+    then
+        local lua_version=$(cat $__luaver_LUA_DEFAULT_FILE)
+        __luaver_use_lua $lua_version
+    fi
+
+    if [ -f $__luaver_LUAJIT_DEFAULT_FILE ]
+    then
+        local luajit_version=$(cat $__luaver_LUAJIT_DEFAULT_FILE)
+        __luaver_use_luajit $luajit_version
+    fi
+
+    if [ -f $__luaver_LUAROCKS_DEFAULT_FILE ]
+    then
+        local luarocks_version=$(cat $__luaver_LUAROCKS_DEFAULT_FILE)
+        __luaver_use_luarocks $luarocks_version
+    fi
+
+    __luaver_verbose=1
+
+    __luaver_exec_command "cd ${__luaver_present_dir}"
+}
+
+# Checking whether a particular tool exists or not
+__luaver_exists()
+{
+    type "$1" > /dev/null 2>&1
+}
+
+# Downloads file from a url
+__luaver_download()
+{
+    local url=$1
+
+    __luaver_print "Downloading from ${url}"
+
+    if __luaver_exists "wget"
+    then
+        __luaver_exec_command "wget ${url}"
+    else
+        __luaver_error "'wget' must be installed"
+    fi
+
+    __luaver_print "Download successful"
+}
+
+# Unpacks an archive
+__luaver_unpack()
+{
+    __luaver_print "Unpacking ${1}"
+
+    if __luaver_exists "tar"
+    then
+        __luaver_exec_command "tar xvzf ${1}"
+    else
+        __luaver_error "'tar' must be installed"
+    fi
+
+    __luaver_print "Unpack successful"
+}
+
+# Downloads and unpacks an archive
+__luaver_download_and_unpack()
+{
+    local unpack_dir_name=$1
+    local archive_name=$2
+    local url=$3
+
+    __luaver_print "Detecting already downloaded archives"
+
+    # Checking if archive already downloaded or not
+    if [ -e $unpack_dir_name ]
+    then
+        read -r -p "${unpack_dir_name} has already been downloaded. Download again? [Y/n]: " choice
+        case $choice in
+            [yY][eE][sS] | [yY] )
+                __luaver_exec_command "rm -r ${unpack_dir_name}"
+                ;;
+        esac
+    fi
+
+    # Downloading the archive only if it does not exist"
+    if [ ! -e $unpack_dir_name ]
+    then
+        __luaver_print "Downloading ${unpack_dir_name}"
+        __luaver_download $url
+        __luaver_print "Extracting archive"
+        __luaver_unpack $archive_name
+        __luaver_exec_command "rm ${archive_name}"
+    fi
+}
+
+# Removes existing strings starting with a prefix in PATH
+__luaver_remove_previous_paths()
+{
+    local prefix=$1
+
+    local new_path=$(echo $PATH | sed \
+        -e "s#${prefix}/[^/]*/bin[^:]*:##g" \
+        -e "s#:${prefix}/[^/]*/bin[^:]*##g" \
+        -e "s#${prefix}/[^/]*/bin[^:]*##g")
+
+    export PATH=$new_path
+}
+
+# Append to PATH
+__luaver_append_path()
+{
+    export PATH="${1}:${PATH}"
+}
+
+# Uninstalls lua/luarocks
+__luaver_uninstall()
+{
+    local package_name=$1
+    local package_path=$2
+    local package_dir=$3
+
+    __luaver_print "Uninstalling ${package_name}"
+
+    __luaver_exec_command "cd ${package_path}"
+    if [ ! -e "${package_dir}" ]
+    then
+        __luaver_error "${package_name} is not installed"
+    fi
+
+    __luaver_exec_command 'rm -r "${package_dir}"'
+
+    __luaver_print "Successfully uninstalled ${package_name}"
+}
+
+# Returns the platform
+__luaver_get_platform()
+{
+    local platform_str=$(uname | tr "[:upper:]" "[:lower:]")
+    local platforms=("aix" "bsd" "c89" "freebsd" "generic" "linux" "macosx" "mingw" "posix" "solaris")
+
+    __luaver_print "Detecting platform"
+
+    for platform in "${platforms[@]}"
+    do
+        if [[ "${platform_str}" =~ "${platform}" ]]
+        then
+            __luaver_print "Platform detected: ${platform}"
+            eval "$1='$platform'"
+            return
+        fi
+    done
+
+    # Default platform
+    __luaver_print "Unable to detect platform. Using default 'linux'"
+    eval "$1='linux'"
+}
+
+# Returns the current lua version
+__luaver_get_current_lua_version()
+{
+    local version=$(which lua)
+
+    version=${version#$__luaver_LUA_DIR/}
+    version=${version%/bin/lua}
+    
+    eval "$1='$version'"
+}
+
+# Returns the current lua version (only the first two numbers)
+__luaver_get_current_lua_version_short()
+{
+    local version=""
+
+    if __luaver_exists lua
+    then
+        version=$(lua -e 'print(_VERSION:sub(5))')
+    fi
+
+    eval "$1='$version'"
+}
+
+# Returns the current luajit version
+__luaver_get_current_luajit_version()
+{
+    local version=$(which luajit)
+
+    version=${version#$__luaver_LUAJIT_DIR/}
+    version=${version%/bin/luajit}
+
+    eval "$1='$version'"
+}
+
+# Returns the current luarocks version
+__luaver_get_current_luarocks_version()
+{
+    local version=$(which luarocks)
+
+    version=${version#$__luaver_LUAROCKS_DIR/}
+    version=${version%/bin/luarocks}
+    version=${version%_*}
+
+    eval "$1='$version'"
+}
+
+# Returns the short lua version being supported by present luarocks
+__luaver_get_lua_version_by_current_luarocks()
+{
+    local version=$(which luarocks)
+
+    version=${version#$__luaver_LUAROCKS_DIR/}
+    version=${version%/bin/luarocks}
+    version=${version#*_}
+
+    eval "$1='$version'"
+}
+
+# End of Helper functions
+###############################################################################
+
+__luaver_usage()
+{
+    __luaver_print_formatted ""
+    __luaver_version
+    __luaver_print_formatted "Usage:\n"
+    __luaver_print_formatted "   luaver help                              Displays this message"
+    __luaver_print_formatted "   luaver install <version>                 Installs lua-<version>"
+    __luaver_print_formatted "   luaver use <version>                     Switches to lua-<version>"
+    __luaver_print_formatted "   luaver set-default <version>             Sets <version> as default for lua"
+    __luaver_print_formatted "   luaver unset-default                     Unsets the default lua version"
+    __luaver_print_formatted "   luaver uninstall <version>               Uninstalls lua-<version>"
+    __luaver_print_formatted "   luaver list                              Lists installed lua versions"
+    __luaver_print_formatted "   luaver install-luajit <version>          Installs LuaJIT-<version>"
+    __luaver_print_formatted "   luaver use-luajit <version>              Switches to LuaJIT-<version>"
+    __luaver_print_formatted "   luaver set-default-luajit <version>      Sets <version> as default for LuaJIT"
+    __luaver_print_formatted "   luaver unset-default-luajit              Unsets the default LuaJIT version"
+    __luaver_print_formatted "   luaver uninstall-luajit <version>        Uninstalls LuaJIT-<version>"
+    __luaver_print_formatted "   luaver list-luajit                       Lists installed LuaJIT versions"
+    __luaver_print_formatted "   luaver install-luarocks <version>        Installs luarocks<version>"
+    __luaver_print_formatted "   luaver use-luarocks <version>            Switches to luarocks-<version>"
+    __luaver_print_formatted "   luaver set-default-luarocks <version>    Sets <version> as default for luarocks"
+    __luaver_print_formatted "   luaver unset-default-luarocks            Unsets the default luarocks version"
+    __luaver_print_formatted "   luaver uninstall-luarocks <version>      Uninstalls luarocks-<version>"
+    __luaver_print_formatted "   luaver list-luarocks                     Lists all installed luarocks versions"
+    __luaver_print_formatted "   luaver current                           Lists present versions being used"
+    __luaver_print_formatted "   luaver version                           Displays luaver version"
+    __luaver_print_formatted "\nExamples:\n"
+    __luaver_print_formatted "   luaver install 5.3.1                     # Installs lua version 5.3.1"
+    __luaver_print_formatted "   luaver install 5.3.0                     # Installs lua version 5.3.0"
+    __luaver_print_formatted "   luaver use 5.3.1                         # Switches to lua version 5.3.1"
+    __luaver_print_formatted "   luaver install-luarocks 2.3.0            # Installs luarocks version 2.3.0"
+    __luaver_print_formatted "   luaver uninstall 5.3.0                   # Uninstalls lua version 5.3.0"
+}
+
+__luaver_install_lua()
+{
+    local version=$1
+    local lua_dir_name="lua-${version}"
+    local archive_name="${lua_dir_name}.tar.gz"
+    local url="http://www.lua.org/ftp/${archive_name}"
+
+    __luaver_print "Installing ${lua_dir_name}"
+
+    __luaver_exec_command "cd ${__luaver_SRC_DIR}"
+
+    __luaver_download_and_unpack $lua_dir_name $archive_name $url
+
+    __luaver_get_platform platform
+
+    __luaver_exec_command "cd ${lua_dir_name}"
+
+    __luaver_print "Compiling ${lua_dir_name}"
+
+    __luaver_exec_command "make ${platform} install INSTALL_TOP=${__luaver_LUA_DIR}/${version}"
+
+    read -r -p "${lua_dir_name} successfully installed. Do you want use to this version? [Y/n]: " choice
+    case $choice in
+        [yY][eE][sS] | [yY] )
+            __luaver_use_lua $version
+            ;;
+    esac 
+}
+
+__luaver_use_lua()
+{
+    local version=$1
+    local lua_name="lua-${version}"
+
+    __luaver_print "Switching to ${lua_name}"
+
+    # Checking if this version exists
+    __luaver_exec_command "cd ${__luaver_LUA_DIR}"
+
+    if [ ! -e $version ]
+    then
+        read -r -p "${lua_name} is not installed. Do you want to install it? [Y/n]: " choice
+        case $choice in
+            [yY][eE][sS] | [yY] )
+                __luaver_install_lua $version
+                ;;
+            * )
+                __luaver_error "Unable to use ${lua_name}"
+        esac
+        return
+    fi
+
+    __luaver_remove_previous_paths "${__luaver_LUA_DIR}"
+    __luaver_append_path "${__luaver_LUA_DIR}/${version}/bin"
+
+    __luaver_print "Successfully switched to ${lua_name}"
+
+    # Checking whether luarocks is in use
+    if [ -L "luarocks" ]
+    then
+        # Checking if lua version of luarocks is consistent
+        __luaver_get_current_lua_version_short lua_version_1
+        __luaver_get_lua_version_by_current_luarocks lua_version_2
+        __luaver_get_current_luarocks_version luarocks_version
+
+        if [ $lua_version_1 != $lua_version_2 ]
+        then
+            __luaver_print "Luarocks in use is inconsistent with this lua version"
+            __luaver_exec_command "rm luarocks"
+            __luaver_exec_command "rm luarocks-admin"
+            __luaver___luaver_use_luarocks $luarocks_version
+        fi
+    fi
+}
+
+__luaver_set_default_lua()
+{
+    local version=$1
+
+    __luaver_exec_command "echo ${version} > ${__luaver_LUA_DEFAULT_FILE}"
+    __luaver_print "Default version set for lua: ${version}"
+}
+
+__luaver___luaver_unset_default_lua()
+{
+    __luaver___luaver_exec_command "rm ${__luaver_LUA_DEFAULT_FILE}"
+    __luaver___luaver_print "Removed default version for lua"
+}
+
+__luaver_uninstall_lua()
+{
+    local version=$1
+    local lua_name="lua-${version}"
+
+    __luaver_get_current_lua_version current_version
+
+    __luaver_uninstall $lua_name $__luaver_LUA_DIR $version
+
+    if [ "${version}" == "${current_version}" ]
+    then
+        __luaver_remove_previous_paths "${__luaver_LUA_DIR}"
+    fi
+}
+
+__luaver_list_lua()
+{
+    local installed_versions=($(ls $__luaver_LUA_DIR/))
+    
+    __luaver_get_current_lua_version current_version
+
+    __luaver_print "Installed versions: "
+    for version in "${installed_versions[@]}"
+    do
+        if [ "${version}" == "${current_version}" ]
+        then
+            __luaver_print "lua-${version} <--"
+        else 
+            __luaver_print "lua-${version}"
+        fi
+    done
+}
+
+__luaver_install_luajit()
+{
+    local version=$1
+    local luajit_dir_name="LuaJIT-${version}"
+    local archive_name="${luajit_dir_name}.tar.gz"
+    local url="http://luajit.org/download/${archive_name}"
+
+    __luaver_print "Installing ${luajit_dir_name}"
+
+    __luaver_exec_command "cd ${__luaver_SRC_DIR}"
+
+    __luaver_download_and_unpack $luajit_dir_name $archive_name $url
+
+    __luaver_exec_command "cd ${luajit_dir_name}"
+
+    __luaver_print "Compiling ${luajit_dir_name}"
+
+    __luaver_exec_command "make PREFIX=${__luaver_LUAJIT_DIR}/${version}"
+    __luaver_exec_command "make install PREFIX=${__luaver_LUAJIT_DIR}/${version}"
+
+    read -r -p "${luajit_dir_name} successfully installed. Do you want to use this version? [Y/n]: " choice
+    case $choice in
+        [yY][eE][sS] | [yY] )
+            __luaver_use_luajit $version
+            ;;
+    esac
+}
+
+__luaver_use_luajit()
+{
+    local version=$1
+    local luajit_name="LuaJIT-${version}"
+
+    __luaver_print "Switching to ${luajit_name}"
+
+    # Checking if this version exists
+    __luaver_exec_command "cd ${__luaver_LUAJIT_DIR}"
+
+    if [ ! -e $version ]
+    then
+        read -r -p "${luajit_name} is not installed. Want to install it? [Y/n]: " choice
+        case $choice in
+            [yY][eE][sS] | [yY] )
+                __luaver_install_lua $version
+                ;;
+            * )
+                __luaver_error "Unable to use ${luajit_name}"
+        esac
+        return
+    fi
+
+    __luaver_remove_previous_paths "${__luaver_LUAJIT_DIR}"
+    __luaver_append_path "${__luaver_LUAJIT_DIR}/${version}/bin"
+
+    __luaver_print "Successfully switched to ${luajit_name}"
+}
+
+__luaver_set_default_luajit()
+{
+    local version=$1
+
+    __luaver_exec_command "echo ${version} > ${__luaver_LUAJIT_DEFAULT_FILE}"
+    __luaver_print "Default version set for luajit: ${version}"
+}
+
+__luaver_unset_default_luajit()
+{
+    __luaver_exec_command "rm ${__luaver_LUAJIT_DEFAULT_FILE}"
+    __luaver_print "Removed default version for LuaJIT"
+}
+
+__luaver_uninstall_luajit()
+{
+    local version=$1
+    local luajit_name="LuaJIT-${version}"
+
+    __luaver_get_current_luajit_version current_version
+
+    __luaver_uninstall $luajit_name $__luaver_LUAJIT_DIR $version
+
+    if [ "${version}" == "${current_version}" ]
+    then
+        __luaver_remove_previous_paths "${__luaver_LUAJIT_DIR}"
+    fi
+}
+
+__luaver_list_luajit()
+{
+    local installed_versions=($(ls $__luaver_LUAJIT_DIR/))
+
+    __luaver_get_current_luajit_version current_version
+
+    __luaver_print "Installed versions: "
+    for version in "${installed_versions[@]}"
+    do
+        if [ "${version}" == "${current_version}" ]
+        then
+            __luaver_print "LuaJIT-${version} <--"
+        else
+            __luaver_print "LuaJIT-${version}"
+        fi
+    done
+}
+
+__luaver_install_luarocks()
+{
+    # Checking whether any version of lua is installed or not
+    __luaver_get_current_lua_version lua_version
+    if [ "" == "${lua_version}" ]
+    then
+        __luaver_error "No lua version set"
+    fi
+
+    __luaver_get_current_lua_version_short lua_version_short
+
+    local version=$1
+    local luarocks_dir_name="luarocks-${version}"
+    local archive_name="${luarocks_dir_name}.tar.gz"
+    local url="http://luarocks.org/releases/${archive_name}"
+
+    __luaver_print "Installing ${luarocks_dir_name} for lua version ${lua_version}"
+
+    __luaver_exec_command "cd ${__luaver_SRC_DIR}"
+
+    __luaver_download_and_unpack $luarocks_dir_name $archive_name $url
+
+    __luaver_exec_command "cd ${luarocks_dir_name}"
+
+    __luaver_print "Compiling ${luarocks_dir_name}"
+
+    __luaver_exec_command "./configure
+                        --prefix=${__luaver_LUAROCKS_DIR}/${version}_${lua_version_short}
+                        --with-lua=${__luaver_LUA_DIR}/${lua_version}
+                        --with-lua-bin=${__luaver_LUA_DIR}/${lua_version}/bin
+                        --with-lua-include=${__luaver_LUA_DIR}/${lua_version}/include
+                        --with-lua-lib=${__luaver_LUA_DIR}/${lua_version}/lib
+                        --versioned-rocks-dir"
+
+    __luaver_exec_command "make build"
+    __luaver_exec_command "make install"
+
+    read -r -p "${luarocks_dir_name} successfully installed. Do you want to use this version? [Y/n]: " choice
+    case $choice in
+        [yY][eE][sS] | [yY] )
+            __luaver_use_luarocks $version
+            ;;
+    esac
+}
+
+__luaver_use_luarocks()
+{
+    local version=$1
+    local luarocks_name="luarocks-${version}"
+
+    __luaver_get_current_lua_version_short lua_version
+
+    if [ "${lua_version}" == "" ]
+    then
+        __luaver_error "You need to first switch to a lua installation"
+    fi
+
+    __luaver_print "Switching to ${luarocks_name} with lua version: ${lua_version}"
+
+    # Checking if this version exists
+    __luaver_exec_command "cd ${__luaver_LUAROCKS_DIR}"
+
+    if [ ! -e "${version}_${lua_version}" ]
+    then
+        read -r -p "${luarocks_name} is not installed with lua version ${lua_version}. Want to install it? [Y/n]: " choice
+        case $choice in
+            [yY][eE][sS] | [yY] )
+                __luaver_install_luarocks $version
+                ;;
+            * )
+                __luaver_error "Unable to use ${luarocks_name}"
+        esac
+        return
+    fi
+
+    __luaver_remove_previous_paths "${__luaver_LUAROCKS_DIR}"
+    __luaver_append_path "${__luaver_LUAROCKS_DIR}/${version}_${lua_version}/bin"
+
+    # Setting up LUA_PATH and LUA_CPATH
+    eval $(luarocks path)
+
+    __luaver_print "Successfully switched to ${luarocks_name}"
+}
+
+__luaver_set_default_luarocks()
+{
+    local version=$1
+
+    __luaver_exec_command "echo ${version} > ${__luaver_LUAROCKS_DEFAULT_FILE}"
+    __luaver_print "Default version set for luarocks: ${version}"
+}
+
+__luaver_unset_default_luarocks()
+{
+    __luaver_exec_command "rm ${__luaver_LUAROCKS_DEFAULT_FILE}"
+    __luaver_print "Removed default version for luarocks"
+}
+
+__luaver_uninstall_luarocks()
+{
+    local version=$1
+    local luarocks_name="luarocks-${version}"
+
+    __luaver_get_current_lua_version_short lua_version
+    __luaver_get_current_luarocks_version current_version
+
+    __luaver_print "${luarocks_name} will be uninstalled for lua version ${lua_version}"
+
+    __luaver_uninstall $luarocks_name $__luaver_LUAROCKS_DIR "${version}_${lua_version}"
+
+    if [ "${version}" == "${current_version}" ]
+    then
+        __luaver_remove_previous_paths "${__luaver_LUAROCKS_DIR}"
+    fi
+}
+
+__luaver_list_luarocks()
+{
+    local installed_versions=($(ls $__luaver_LUAROCKS_DIR/))
+
+    __luaver_get_current_luarocks_version current_luarocks_version
+    __luaver_get_lua_version_by_current_luarocks current_lua_version
+
+    __luaver_print "Installed versions: "
+    for version in "${installed_versions[@]}"
+    do
+        luarocks_version=${version%_*}
+        lua_version=${version#*_}
+
+        if [ "${luarocks_version}" == "${current_luarocks_version}" ] && [ "${lua_version}" == "${current_lua_version}" ]
+        then
+            __luaver_print "luarocks-${luarocks_version} (lua version: ${lua_version}) <--"
+        else
+            __luaver_print "luarocks-${luarocks_version} (lua version: ${lua_version})"
+        fi
+    done
+}
+
+__luaver_current()
+{
+    __luaver_get_current_lua_version lua_version
+    __luaver_get_current_luajit_version luajit_version
+    __luaver_get_current_luarocks_version luarocks_version
+
+    __luaver_print "Current versions:"
+
+    if [ ! "${lua_version}" == "" ]
+    then
+        __luaver_print "lua-${lua_version}"
+    fi
+    if [ ! "${luajit_version}" == "" ]
+    then
+        __luaver_print "LuaJIT-${luajit_version}"
+    fi
+    if [ ! "${luarocks_version}" == "" ]
+    then
+        __luaver_print "luarocks-${luarocks_version}"
+    fi
+}
+
+__luaver_version()
+{
+    __luaver_print_formatted "Lua Version Manager ${__luaver_VERSION}\n"
+    __luaver_print_formatted "Developed by Dhaval Kapil <me@dhavalkapil.com>\n"
+}
+
+# Init environment
+__luaver_init
+
+luaver()
+{
+    __luaver_present_dir=$(pwd)
+
+    case $1 in
+        "help" )                    __luaver_usage;;
+
+        "install" )                 __luaver_install_lua ${@:2};;
+        "use" )                     __luaver_use_lua ${@:2};;
+        "set-default" )             __luaver_set_default_lua ${@:2};;
+        "unset-default" )           __luaver_unset_default_lua ${@:2};;
+        "uninstall" )               __luaver_uninstall_lua ${@:2};;
+        "list" )                    __luaver_list_lua;;
+
+        "install-luajit")           __luaver_install_luajit ${@:2};;
+        "use-luajit" )              __luaver_use_luajit ${@:2};;
+        "set-default-luajit" )      __luaver_set_default_luajit ${@:2};;
+        "unset-default-luajit" )    __luaver_unset_default_luajit ${@:2};;
+        "uninstall-luajit" )        __luaver_uninstall_luajit ${@:2};;
+        "list-luajit" )             __luaver_list_luajit;;
+
+        "install-luarocks")         __luaver_install_luarocks ${@:2};;
+        "use-luarocks" )            __luaver_use_luarocks ${@:2};;
+        "set-default-luarocks" )    __luaver_set_default_luarocks ${@:2};;
+        "unset-default-luarocks" )  __luaver_unset_default_luarocks ${@:2};;
+        "uninstall-luarocks" )      __luaver_uninstall_luarocks ${@:2};;
+        "list-luarocks" )           __luaver_list_luarocks;;
+
+        "current" )                 __luaver_current;;
+        "version" )                 __luaver_version;;
+        * )                         __luaver_usage;;
+    esac
+
+    __luaver_exec_command "cd ${__luaver_present_dir}"
+}

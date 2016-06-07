@@ -1,6 +1,6 @@
-# Lua Version Manager - luavm
+# Lua Version Manager - luaver
 
-[![Build Status](https://travis-ci.org/DhavalKapil/luavm.svg?branch=master)](https://travis-ci.org/DhavalKapil/luavm)
+[![Build Status](https://travis-ci.org/DhavalKapil/luaver.svg?branch=master)](https://travis-ci.org/DhavalKapil/luaver)
 
 Command line tool to manage and switch between different versions of lua, LuaJIT and luarocks.
 
@@ -32,7 +32,7 @@ sudo apt-get install lib32ncurses5-dev
 Run the following command to install
 
 ```sh
-curl https://raw.githubusercontent.com/DhavalKapil/luavm/master/install.sh -o install.sh && . ./install.sh
+curl https://raw.githubusercontent.com/dhavalkapil/luaver/master/install.sh -o install.sh && . ./install.sh
 ```
 
 ## Usage
@@ -40,46 +40,46 @@ curl https://raw.githubusercontent.com/DhavalKapil/luavm/master/install.sh -o in
 ### Sample usage:
 
 ```sh
-luavm install 5.3.1             # Installs lua version 5.3.1
-luavm install 5.3.0             # Installs lua version 5.3.0
-luavm use 5.3.1                 # Switches to lua version 5.3.1
-luavm install-luarocks 2.3.0    # Installs luarocks version 2.3.0
-luavm uninstall 5.3.0           # Uninstalls lua version 5.3.0
+luaver install 5.3.1             # Installs lua version 5.3.1
+luaver install 5.3.0             # Installs lua version 5.3.0
+luaver use 5.3.1                 # Switches to lua version 5.3.1
+luaver install-luarocks 2.3.0    # Installs luarocks version 2.3.0
+luaver uninstall 5.3.0           # Uninstalls lua version 5.3.0
 ```
 
 ### Complete usage:
 
 ```sh
-luavm help
+luaver help
 
 Usage:
-   luavm help                              Displays this message
-   luavm install <version>                 Installs lua-<version>
-   luavm use <version>                     Switches to lua-<version>
-   luavm set-default <version>             Sets <version> as default for lua
-   luavm unset-default                     Unsets the default lua version
-   luavm uninstall <version>               Uninstalls lua-<version>
-   luavm list                              Lists installed lua versions
-   luavm install-luajit <version>          Installs LuaJIT-<version>
-   luavm use-luajit <version>              Switches to LuaJIT-<version>
-   luavm set-default-luajit <version>      Sets <version> as default for LuaJIT
-   luavm unset-default-luajit              Unsets the default LuaJIT version
-   luavm uninstall-luajit <version>        Uninstalls LuaJIT-<version>
-   luavm list-luajit                       Lists installed LuaJIT versions
-   luavm install-luarocks <version>        Installs luarocks<version>
-   luavm use-luarocks <version>            Switches to luarocks-<version>
-   luavm set-default-luarocks <version>    Sets <version> as default for luarocks
-   luavm unset-default-luarocks            Unsets the default luarocks version
-   luavm uninstall-luarocks <version>      Uninstalls luarocks-<version>
-   luavm list-luarocks                     Lists all installed luarocks versions
-   luavm current                           Lists present versions being used
-   luavm version                           Displays luavm version
+   luaver help                              Displays this message
+   luaver install <version>                 Installs lua-<version>
+   luaver use <version>                     Switches to lua-<version>
+   luaver set-default <version>             Sets <version> as default for lua
+   luaver unset-default                     Unsets the default lua version
+   luaver uninstall <version>               Uninstalls lua-<version>
+   luaver list                              Lists installed lua versions
+   luaver install-luajit <version>          Installs LuaJIT-<version>
+   luaver use-luajit <version>              Switches to LuaJIT-<version>
+   luaver set-default-luajit <version>      Sets <version> as default for LuaJIT
+   luaver unset-default-luajit              Unsets the default LuaJIT version
+   luaver uninstall-luajit <version>        Uninstalls LuaJIT-<version>
+   luaver list-luajit                       Lists installed LuaJIT versions
+   luaver install-luarocks <version>        Installs luarocks<version>
+   luaver use-luarocks <version>            Switches to luarocks-<version>
+   luaver set-default-luarocks <version>    Sets <version> as default for luarocks
+   luaver unset-default-luarocks            Unsets the default luarocks version
+   luaver uninstall-luarocks <version>      Uninstalls luarocks-<version>
+   luaver list-luarocks                     Lists all installed luarocks versions
+   luaver current                           Lists present versions being used
+   luaver version                           Displays luaver version
 ```
 
 ## Contribution
 
-Feel free to [file issues](https://github.com/DhavalKapil/luavm/issues) and submit [pull requests](https://github.com/DhavalKapil/luavm/pulls) – contributions are welcome.
+Feel free to [file issues](https://github.com/DhavalKapil/luaver/issues) and submit [pull requests](https://github.com/DhavalKapil/luaver/pulls) – contributions are welcome.
 
 ## License
 
-luavm is licensed under the [MIT license](http://dhaval.mit-license.org/).
+luaver is licensed under the [MIT license](http://dhaval.mit-license.org/).

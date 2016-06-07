@@ -1,14 +1,14 @@
 #!/bin/bash
 
-PROGRAM="luavm"
-SRC_URL="https://raw.githubusercontent.com/DhavalKapil/luavm/master/${PROGRAM}"
+PROGRAM="luaver"
+SRC_URL="https://raw.githubusercontent.com/dhavalkapil/luaver/master/${PROGRAM}"
 
 # Directories to be used
-LUAVM_DIR="${HOME}/.luavm"              # The luavm directory
-SRC_DIR="${LUAVM_DIR}/src"              # Where source code is downloaded
-LUA_DIR="${LUAVM_DIR}/lua"              # Where lua source is built
-LUAJIT_DIR="${LUAVM_DIR}/luajit"        # Where luajit source is built
-LUAROCKS_DIR="${LUAVM_DIR}/luarocks"    # Where luarocks source is built
+LUAVER_DIR="${HOME}/.luaver"             # The luaver directory
+SRC_DIR="${LUAVER_DIR}/src"              # Where source code is downloaded
+LUA_DIR="${LUAVER_DIR}/lua"              # Where lua source is built
+LUAJIT_DIR="${LUAVER_DIR}/luajit"        # Where luajit source is built
+LUAROCKS_DIR="${LUAVER_DIR}/luarocks"    # Where luarocks source is built
 
 # Initializes directories
 
@@ -24,9 +24,9 @@ init()
 {
     print "Setting up directory structure..."
     
-    if [ ! -e $LUAVM_DIR ]
+    if [ ! -e $LUAVER_DIR ]
     then
-        mkdir $LUAVM_DIR
+        mkdir $LUAVER_DIR
     fi
     if [ ! -e $SRC_DIR ]
     then
@@ -47,11 +47,11 @@ init()
     print "Directory structure built..."
 }
 
-# Downloads luavm
+# Downloads luaver
 install()
 {
     print "Downloading '${PROGRAM}'..."
-    cd $LUAVM_DIR
+    cd $LUAVER_DIR
     if [ -e $PROGRAM ]
     then
         print "Existing '${PROGRAM}' detected. Removing it..."
@@ -66,7 +66,7 @@ install()
 # Inserts path variables inside bash rc
 set_up_path()
 {
-    local str="[ -s ${LUAVM_DIR}/${PROGRAM} ] && . ${LUAVM_DIR}/${PROGRAM}"
+    local str="[ -s ${LUAVER_DIR}/${PROGRAM} ] && . ${LUAVER_DIR}/${PROGRAM}"
     local shell_type="$(basename $SHELL)"
     print "Detected SHELL_TYPE: ${shell_type}"
     

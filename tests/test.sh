@@ -1,9 +1,9 @@
-. ~/.luavm/luavm
+. ~/.luaver/luaver
 
 echo "Y" > yes
 
 # Installing lua 5.3.2
-luavm install 5.3.2 < yes
+luaver install 5.3.2 < yes
 
 # Confirming
 version_string=$(lua -v)
@@ -13,7 +13,7 @@ then
 fi
 
 # Installing lua 5.3.1
-luavm install 5.3.1 < yes
+luaver install 5.3.1 < yes
 
 # Confirming
 version_string=$(lua -v)
@@ -23,7 +23,7 @@ then
 fi
 
 # Installing luarocks 2.3.0
-luavm install-luarocks 2.3.0 < yes
+luaver install-luarocks 2.3.0 < yes
 
 # Confirming
 version_string=$(luarocks)
