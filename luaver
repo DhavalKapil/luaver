@@ -402,7 +402,7 @@ __luaver_use_lua()
     __luaver_print "Successfully switched to ${lua_name}"
 
     # Checking whether luarocks is in use
-    if [ -L "luarocks" ]
+    if exists "luarocks"
     then
         # Checking if lua version of luarocks is consistent
         __luaver_get_current_lua_version_short lua_version_1
@@ -412,9 +412,7 @@ __luaver_use_lua()
         if [ $lua_version_1 != $lua_version_2 ]
         then
             __luaver_print "Luarocks in use is inconsistent with this lua version"
-            __luaver_exec_command "rm luarocks"
-            __luaver_exec_command "rm luarocks-admin"
-            __luaver___luaver_use_luarocks $luarocks_version
+            __luaver_use_luarocks $luarocks_version
         fi
     fi
 }
