@@ -40,3 +40,21 @@ if [ $? == 1 ]
 then
 	exit 1
 fi
+
+luaver uninstall 5.3.1
+
+lua
+
+if [ $? == 0 ]
+then
+    exit 1
+fi
+
+luaver use 5.3.2
+
+# Confirming
+version_string=$(lua -v)
+if test "${version_string#*5.3.2}" == "${version_string}"
+then
+    exit 1
+fi
