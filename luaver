@@ -402,7 +402,7 @@ __luaver_use_lua()
     __luaver_print "Successfully switched to ${lua_name}"
 
     # Checking whether luarocks is in use
-    if exists "luarocks"
+    if __luaver_exists "luarocks"
     then
         # Checking if lua version of luarocks is consistent
         __luaver_get_current_lua_version_short lua_version_1
