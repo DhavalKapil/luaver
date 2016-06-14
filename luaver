@@ -120,6 +120,34 @@ __luaver_init()
 # Checking whether a particular tool exists or not
 __luaver_exists()
 {
+    if [ "$1" == "lua" ]
+    then
+        if [[ $(which lua) == ${__luaver_LUA_DIR}* ]]
+        then
+            return 0
+        else
+            return 1
+        fi
+    fi
+    if [ "$1" == "luajit" ]
+    then
+        if [[ $(which lua) == ${__luaver_LUAJIT_DIR}* ]]
+        then
+            return 0
+        else
+            return 1
+        fi
+    fi
+    if [ "$1" == "luarocks" ]
+    then
+        if [[ $(which lua) == ${__luaver_LUAROCKS_DIR}* ]]
+        then
+            return 0
+        else
+            return 1
+        fi
+    fi
+
     type "$1" > /dev/null 2>&1
 }
 
@@ -253,8 +281,13 @@ __luaver_get_current_lua_version()
 {
     local version=$(which lua)
 
-    version=${version#$__luaver_LUA_DIR/}
-    version=${version%/bin/lua}
+    if __luaver_exists lua
+    then
+        version=${version#$__luaver_LUA_DIR/}
+        version=${version%/bin/lua}
+    else
+        version=""
+    fi
     
     eval "$1='$version'"
 }
@@ -277,8 +310,13 @@ __luaver_get_current_luajit_version()
 {
     local version=$(which luajit)
 
-    version=${version#$__luaver_LUAJIT_DIR/}
-    version=${version%/bin/luajit}
+    if __luaver_exists "luajit"
+    then
+        version=${version#$__luaver_LUAJIT_DIR/}
+        version=${version%/bin/luajit}
+    else
+        version=""
+    fi
 
     eval "$1='$version'"
 }
@@ -288,9 +326,14 @@ __luaver_get_current_luarocks_version()
 {
     local version=$(which luarocks)
 
-    version=${version#$__luaver_LUAROCKS_DIR/}
-    version=${version%/bin/luarocks}
-    version=${version%_*}
+    if __luaver_exists "luarocks"
+    then
+        version=${version#$__luaver_LUAROCKS_DIR/}
+        version=${version%/bin/luarocks}
+        version=${version%_*}
+    else
+        version=""
+    fi
 
     eval "$1='$version'"
 }
@@ -300,9 +343,14 @@ __luaver_get_lua_version_by_current_luarocks()
 {
     local version=$(which luarocks)
 
-    version=${version#$__luaver_LUAROCKS_DIR/}
-    version=${version%/bin/luarocks}
-    version=${version#*_}
+    if __luaver_exists "luarocks"
+    then
+        version=${version#$__luaver_LUAROCKS_DIR/}
+        version=${version%/bin/luarocks}
+        version=${version#*_}
+    else
+        version=""
+    fi
 
     eval "$1='$version'"
 }
