@@ -18,20 +18,20 @@
         <h1>Luavm</h1>
         <p>Lua Version Manager - Command line tool to manage and switch between different versions of lua, LuaJIT and luarocks.</p>
 
-        <p class="view"><a href="https://github.com/DhavalKapil/luavm">View the Project on GitHub <small>DhavalKapil/luavm</small></a></p>
+        <p class="view"><a href="https://github.com/DhavalKapil/luaver">View the Project on GitHub <small>DhavalKapil/luaver</small></a></p>
 
 
         <ul>
-          <li><a href="https://github.com/DhavalKapil/luavm/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/DhavalKapil/luavm/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/DhavalKapil/luavm">View On <strong>GitHub</strong></a></li>
+          <li><a href="https://github.com/DhavalKapil/luaver/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/DhavalKapil/luaver/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/DhavalKapil/luaver">View On <strong>GitHub</strong></a></li>
         </ul>
       </header>
       <section>
         <h1>
-<a id="lua-version-manager---luavm" class="anchor" href="#lua-version-manager---luavm" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Lua Version Manager - luavm</h1>
+<a id="lua-version-manager---luaver" class="anchor" href="#lua-version-manager---luaver" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Lua Version Manager - luaver</h1>
 
-<p><a href="https://travis-ci.org/DhavalKapil/luavm"><img src="https://travis-ci.org/DhavalKapil/luavm.svg?branch=master" alt="Build Status"></a></p>
+<p><a href="https://travis-ci.org/DhavalKapil/luaver"><img src="https://travis-ci.org/DhavalKapil/luaver.svg?branch=master" alt="Build Status"></a></p>
 
 <p>Command line tool to manage and switch between different versions of lua, LuaJIT and luarocks.</p>
 
@@ -62,7 +62,7 @@
 
 <p>Run the following command to install</p>
 
-<div class="highlight highlight-source-shell"><pre>curl https://raw.githubusercontent.com/DhavalKapil/luavm/master/install.sh -o install.sh <span class="pl-k">&amp;&amp;</span> <span class="pl-c1">.</span> ./install.sh</pre></div>
+<div class="highlight highlight-source-shell"><pre>curl https://raw.githubusercontent.com/dhavalkapil/luaver/master/install.sh -o install.sh <span class="pl-k">&amp;&amp;</span> <span class="pl-c1">.</span> ./install.sh</pre></div>
 
 <h2>
 <a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h2>
@@ -70,43 +70,49 @@
 <h3>
 <a id="sample-usage" class="anchor" href="#sample-usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Sample usage:</h3>
 
-<div class="highlight highlight-source-shell"><pre>luavm install 5.3.1             <span class="pl-c"># Installs lua version 5.3.1</span>
-luavm install 5.3.0             <span class="pl-c"># Installs lua version 5.3.0</span>
-luavm use 5.3.1                 <span class="pl-c"># Switches to lua version 5.3.1</span>
-luavm install-luarocks 2.3.0    <span class="pl-c"># Installs luarocks version 2.3.0</span>
-luavm uninstall 5.3.0           <span class="pl-c"># Uninstalls lua version 5.3.0</span></pre></div>
+<div class="highlight highlight-source-shell"><pre>luaver install 5.3.1             <span class="pl-c"># Installs lua version 5.3.1</span>
+luaver install 5.3.0             <span class="pl-c"># Installs lua version 5.3.0</span>
+luaver use 5.3.1                 <span class="pl-c"># Switches to lua version 5.3.1</span>
+luaver install-luarocks 2.3.0    <span class="pl-c"># Installs luarocks version 2.3.0</span>
+luaver uninstall 5.3.0           <span class="pl-c"># Uninstalls lua version 5.3.0</span></pre></div>
 
 <h3>
 <a id="complete-usage" class="anchor" href="#complete-usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Complete usage:</h3>
 
-<div class="highlight highlight-source-shell"><pre>luavm <span class="pl-c1">help</span>
+<div class="highlight highlight-source-shell"><pre>luaver <span class="pl-c1">help</span>
 
 Usage:
-   luavm <span class="pl-c1">help</span>                          Displays this message
-   luavm install <span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>             Installs lua-<span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>
-   luavm use <span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>                 Switches to lua-<span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>
-   luavm uninstall <span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>           Uninstalls lua-<span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>
-   luavm list                          Lists installed lua versions
-   luavm install-luajit <span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>      Installs LuaJIT-<span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>
-   luavm use-luajit <span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>          Switches to LuaJIT-<span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>
-   luavm uninstall-luajit <span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>    Uninstalls LuaJIT-<span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>
-   luavm list-luajit                   Lists installed LuaJIT versions
-   luavm install-luarocks <span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>    Installs luarocks<span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>
-   luavm use-luarocks <span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>        Switches to luarocks-<span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>
-   luavm uninstall-luarocks <span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>  Uninstalls luarocks-<span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>
-   luavm list-luarocks                 Lists all installed luarocks versions
-   luavm current                       Lists present versions being used
-   luavm version                       Displays luavm version</pre></div>
+   luaver <span class="pl-c1">help</span>                              Displays this message
+   luaver install <span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>                 Installs lua-<span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>
+   luaver use <span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>                     Switches to lua-<span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>
+   luaver set-default <span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>             Sets <span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span> as default <span class="pl-k">for</span> lua
+   luaver unset-default                     Unsets the default lua version
+   luaver uninstall <span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>               Uninstalls lua-<span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>
+   luaver list                              Lists installed lua versions
+   luaver install-luajit <span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>          Installs LuaJIT-<span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>
+   luaver use-luajit <span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>              Switches to LuaJIT-<span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>
+   luaver set-default-luajit <span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>      Sets <span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span> as default <span class="pl-k">for</span> LuaJIT
+   luaver unset-default-luajit              Unsets the default LuaJIT version
+   luaver uninstall-luajit <span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>        Uninstalls LuaJIT-<span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>
+   luaver list-luajit                       Lists installed LuaJIT versions
+   luaver install-luarocks <span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>        Installs luarocks<span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>
+   luaver use-luarocks <span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>            Switches to luarocks-<span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>
+   luaver set-default-luarocks <span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>    Sets <span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span> as default <span class="pl-k">for</span> luarocks
+   luaver unset-default-luarocks            Unsets the default luarocks version
+   luaver uninstall-luarocks <span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>      Uninstalls luarocks-<span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>
+   luaver list-luarocks                     Lists all installed luarocks versions
+   luaver current                           Lists present versions being used
+   luaver version                           Displays luaver version</pre></div>
 
 <h2>
 <a id="contribution" class="anchor" href="#contribution" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Contribution</h2>
 
-<p>Feel free to <a href="https://github.com/DhavalKapil/luavm/issues">file issues</a> and submit <a href="https://github.com/DhavalKapil/luavm/pulls">pull requests</a> – contributions are welcome.</p>
+<p>Feel free to <a href="https://github.com/DhavalKapil/luaver/issues">file issues</a> and submit <a href="https://github.com/DhavalKapil/luaver/pulls">pull requests</a> – contributions are welcome.</p>
 
 <h2>
 <a id="license" class="anchor" href="#license" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>License</h2>
 
-<p>luavm is licensed under the <a href="http://dhaval.mit-license.org/">MIT license</a>.</p>
+<p>luaver is licensed under the <a href="http://dhaval.mit-license.org/">MIT license</a>.</p>
       </section>
       <footer>
         <p>This project is maintained by <a href="https://github.com/DhavalKapil">DhavalKapil</a></p>
