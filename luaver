@@ -131,7 +131,7 @@ __luaver_exists()
     fi
     if [ "$1" == "luajit" ]
     then
-        if [[ $(which lua) == ${__luaver_LUAJIT_DIR}* ]]
+        if [[ $(which luajit) == ${__luaver_LUAJIT_DIR}* ]]
         then
             return 0
         else
@@ -140,7 +140,7 @@ __luaver_exists()
     fi
     if [ "$1" == "luarocks" ]
     then
-        if [[ $(which lua) == ${__luaver_LUAROCKS_DIR}* ]]
+        if [[ $(which luarocks) == ${__luaver_LUAROCKS_DIR}* ]]
         then
             return 0
         else
