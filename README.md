@@ -4,13 +4,15 @@
 
 [![Build Status](https://travis-ci.org/DhavalKapil/luaver.svg?branch=master)](https://travis-ci.org/DhavalKapil/luaver)
 
-Command line tool to manage and switch between different versions of lua, LuaJIT and luarocks.
+luaver helps to manage and switch between different versions of Lua, LuaJIT and Luarocks.
 
 ## Features
 
-1. Installs/Uninstalls any version of 'lua', 'LuaJIT' or 'luarocks' with a single command.
-2. Switches between different versions of 'lua', 'LuaJIT' or 'luarocks' easily and without glitches.
-3. Consistency between 'lua' and 'luarocks' maintained - Rocks and configurations for different lua versions are stored differently.
+1. Installs/Uninstalls any version of Lua, LuaJIT or luarocks with a single command.
+2. Switches between different versions of 'Lua', 'LuaJIT' or 'Luarocks' easily, without glitches.
+3. Consistency between 'Lua' and 'Luarocks' maintained - Rocks and configurations for different lua versions are stored differently.
+
+![gif animation showing usage of luaver](http://i.imgur.com/dCCvNfR.gif)
 
 ## Requirements
 
@@ -22,19 +24,37 @@ You may need to install some dependencies:
 sudo apt-get install libreadline-dev 
 ```
 
-Also, if you are planning to install earlier versions of Lua(which are 32 bit) on 64 bit machines, you may need to install some 32 bit libraries first: 
+Also, if you are planning to install older versions of Lua(which are 32-bit) on 64-bit machines, you may need to install some 32-bit libraries: 
 
 ```sh
 sudo apt-get install lib32ncurses5-dev
 ```
 
-
 ## Installation
 
-Run the following command to install
+### Install script
+
+You can install from the script directly:
 
 ```sh
 curl https://raw.githubusercontent.com/dhavalkapil/luaver/master/install.sh -o install.sh && . ./install.sh
+```
+
+_Note: It will overwrite any `install.sh` in your current directory. Also, this file is no longer needed after the installation is complete._
+
+### Installation from Git Repository
+
+First clone `luaver` on your local machine using git:
+
+```sh
+git clone https://github.com/DhavalKapil/luaver
+```
+
+Then, run the installation script:
+
+```sh
+cd luaver
+. ./install.sh
 ```
 
 ## Usage
@@ -42,11 +62,11 @@ curl https://raw.githubusercontent.com/dhavalkapil/luaver/master/install.sh -o i
 ### Sample usage:
 
 ```sh
-luaver install 5.3.1             # Installs lua version 5.3.1
-luaver install 5.3.0             # Installs lua version 5.3.0
-luaver use 5.3.1                 # Switches to lua version 5.3.1
-luaver install-luarocks 2.3.0    # Installs luarocks version 2.3.0
-luaver uninstall 5.3.0           # Uninstalls lua version 5.3.0
+luaver install 5.3.1             # Installs Lua version 5.3.1
+luaver install 5.3.0             # Installs Lua version 5.3.0
+luaver use 5.3.1                 # Switches to Lua version 5.3.1
+luaver install-luarocks 2.3.0    # Installs Luarocks version 2.3.0
+luaver uninstall 5.3.0           # Uninstalls Lua version 5.3.0
 ```
 
 ### Complete usage:
@@ -62,12 +82,12 @@ Usage:
    luaver unset-default                     Unsets the default lua version
    luaver uninstall <version>               Uninstalls lua-<version>
    luaver list                              Lists installed lua versions
-   luaver install-luajit <version>          Installs LuaJIT-<version>
-   luaver use-luajit <version>              Switches to LuaJIT-<version>
-   luaver set-default-luajit <version>      Sets <version> as default for LuaJIT
-   luaver unset-default-luajit              Unsets the default LuaJIT version
-   luaver uninstall-luajit <version>        Uninstalls LuaJIT-<version>
-   luaver list-luajit                       Lists installed LuaJIT versions
+   luaver install-luajit <version>          Installs luajit-<version>
+   luaver use-luajit <version>              Switches to luajit-<version>
+   luaver set-default-luajit <version>      Sets <version> as default for luajit
+   luaver unset-default-luajit              Unsets the default luajit version
+   luaver uninstall-luajit <version>        Uninstalls luajit-<version>
+   luaver list-luajit                       Lists installed luajit versions
    luaver install-luarocks <version>        Installs luarocks<version>
    luaver use-luarocks <version>            Switches to luarocks-<version>
    luaver set-default-luarocks <version>    Sets <version> as default for luarocks
