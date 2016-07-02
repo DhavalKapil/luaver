@@ -1,10 +1,8 @@
 # Lua Version Manager - luaver
 
-[![Join the chat at https://gitter.im/DhavalKapil/luaver](https://badges.gitter.im/DhavalKapil/luaver.svg)](https://gitter.im/DhavalKapil/luaver?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Build Status](https://travis-ci.org/DhavalKapil/luaver.svg?branch=master)](https://travis-ci.org/DhavalKapil/luaver) [![Join the chat at https://gitter.im/DhavalKapil/luaver](https://badges.gitter.im/DhavalKapil/luaver.svg)](https://gitter.im/DhavalKapil/luaver?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![License](http://img.shields.io/badge/Licence-MIT-brightgreen.svg)](LICENSE)
 
-[![Build Status](https://travis-ci.org/DhavalKapil/luaver.svg?branch=master)](https://travis-ci.org/DhavalKapil/luaver)
-
-luaver helps to manage and switch between different versions of Lua, LuaJIT and Luarocks.
+**luaver** helps to manage and switch between different versions of Lua, LuaJIT and Luarocks.
 
 ## Features
 
