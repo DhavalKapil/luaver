@@ -459,6 +459,9 @@ __luaver_use_lua()
 
         if [ $lua_version_1 != $lua_version_2 ]
         then
+            # Removing earlier version
+            __luaver_remove_previous_paths "${__luaver_LUAROCKS_DIR}"
+
             __luaver_print "Luarocks in use is inconsistent with this lua version"
             __luaver_use_luarocks $luarocks_version
         fi
