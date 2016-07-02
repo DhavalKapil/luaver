@@ -503,16 +503,21 @@ __luaver_list_lua()
     
     __luaver_get_current_lua_version current_version
 
-    __luaver_print "Installed versions: "
-    for version in "${installed_versions[@]}"
-    do
-        if [ "${version}" == "${current_version}" ]
-        then
-            __luaver_print "lua-${version} <--"
-        else 
-            __luaver_print "lua-${version}"
-        fi
-    done
+    if [ ${#installed_versions[@]} -eq 0 ]
+    then
+        __luaver_print "No version of lua is installed"
+    else
+        __luaver_print "Installed versions: "
+        for version in "${installed_versions[@]}"
+        do
+            if [ "${version}" == "${current_version}" ]
+            then
+                __luaver_print "lua-${version} <--"
+            else 
+                __luaver_print "lua-${version}"
+            fi
+        done
+    fi
 }
 
 __luaver_install_luajit()
@@ -607,16 +612,21 @@ __luaver_list_luajit()
 
     __luaver_get_current_luajit_version current_version
 
-    __luaver_print "Installed versions: "
-    for version in "${installed_versions[@]}"
-    do
-        if [ "${version}" == "${current_version}" ]
-        then
-            __luaver_print "LuaJIT-${version} <--"
-        else
-            __luaver_print "LuaJIT-${version}"
-        fi
-    done
+    if [ ${#installed_versions[@]} -eq 0 ]
+    then
+        __luaver_print "No version of LuaJIT is installed"
+    else
+        __luaver_print "Installed versions: "
+        for version in "${installed_versions[@]}"
+        do
+            if [ "${version}" == "${current_version}" ]
+            then
+                __luaver_print "LuaJIT-${version} <--"
+            else
+                __luaver_print "LuaJIT-${version}"
+            fi
+        done
+    fi
 }
 
 __luaver_install_luarocks()
@@ -742,19 +752,24 @@ __luaver_list_luarocks()
     __luaver_get_current_luarocks_version current_luarocks_version
     __luaver_get_lua_version_by_current_luarocks current_lua_version
 
-    __luaver_print "Installed versions: "
-    for version in "${installed_versions[@]}"
-    do
-        luarocks_version=${version%_*}
-        lua_version=${version#*_}
+    if [ ${#installed_versions[@]} -eq 0 ]
+    then
+        __luaver_print "No version of luarocks is installed"
+    else
+        __luaver_print "Installed versions: "
+        for version in "${installed_versions[@]}"
+        do
+            luarocks_version=${version%_*}
+            lua_version=${version#*_}
 
-        if [ "${luarocks_version}" == "${current_luarocks_version}" ] && [ "${lua_version}" == "${current_lua_version}" ]
-        then
-            __luaver_print "luarocks-${luarocks_version} (lua version: ${lua_version}) <--"
-        else
-            __luaver_print "luarocks-${luarocks_version} (lua version: ${lua_version})"
-        fi
-    done
+            if [ "${luarocks_version}" == "${current_luarocks_version}" ] && [ "${lua_version}" == "${current_lua_version}" ]
+            then
+                __luaver_print "luarocks-${luarocks_version} (lua version: ${lua_version}) <--"
+            else
+                __luaver_print "luarocks-${luarocks_version} (lua version: ${lua_version})"
+            fi
+        done
+    fi
 }
 
 __luaver_current()
