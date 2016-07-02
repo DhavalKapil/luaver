@@ -13,11 +13,11 @@ __luaver_VERSION="1.0.0-alpha"
 __luaver_LUAVER_DIR="${HOME}/.luaver"                                      # The luaver directory
 __luaver_SRC_DIR="${__luaver_LUAVER_DIR}/src"                              # Source code is downloaded
 __luaver_LUA_DIR="${__luaver_LUAVER_DIR}/lua"                              # Lua source is built
-__luaver_LUA_DEFAULT_FILE="${__luaver_LUAVER_DIR}/default_lua"             # Lua default version
+__luaver_LUA_DEFAULT_FILE="${__luaver_LUAVER_DIR}/DEFAULT_LUA"             # Lua default version
 __luaver_LUAJIT_DIR="${__luaver_LUAVER_DIR}/luajit"                        # Luajit source is built
-__luaver_LUAJIT_DEFAULT_FILE="${__luaver_LUAVER_DIR}/default_luajit"       # Luajit default version
+__luaver_LUAJIT_DEFAULT_FILE="${__luaver_LUAVER_DIR}/DEFAULT_LUAJIT"       # Luajit default version
 __luaver_LUAROCKS_DIR="${__luaver_LUAVER_DIR}/luarocks"                    # Luarocks source is built
-__luaver_LUAROCKS_DEFAULT_FILE="${__luaver_LUAVER_DIR}/default_luarocks"   # Luarocks default version
+__luaver_LUAROCKS_DEFAULT_FILE="${__luaver_LUAVER_DIR}/DEFAULT_LUAROCKS"   # Luarocks default version
 
 __luaver_present_dir=""
 
@@ -476,10 +476,10 @@ __luaver_set_default_lua()
     __luaver_print "Default version set for lua: ${version}"
 }
 
-__luaver___luaver_unset_default_lua()
+__luaver_unset_default_lua()
 {
-    __luaver___luaver_exec_command "rm ${__luaver_LUA_DEFAULT_FILE}"
-    __luaver___luaver_print "Removed default version for lua"
+    __luaver_exec_command "rm ${__luaver_LUA_DEFAULT_FILE}"
+    __luaver_print "Removed default version for lua"
 }
 
 __luaver_uninstall_lua()
