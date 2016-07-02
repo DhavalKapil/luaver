@@ -9,4 +9,4 @@ before_install:
 install:
   - curl https://raw.githubusercontent.com/dhavalkapil/luaver/master/install.sh -o install.sh && . ./install.sh
 script:
-  - ./tests/test.sh
+  - ./tests/integration/test.sh
