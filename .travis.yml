@@ -1,12 +1,18 @@
 language: generic
+
 addons:
   apt_packages:
   - zsh
   - ksh
+
 before_install:
   - wget --version
   - curl --version
+
 install:
+  - git clone --depth 1 https://github.com/sstephenson/bats.git
   - curl https://raw.githubusercontent.com/dhavalkapil/luaver/master/install.sh -o install.sh && . ./install.sh
+
 script:
+  - ./bats/bin/bats tests
   - ./tests/integration/test.sh
