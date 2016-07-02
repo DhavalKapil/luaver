@@ -1,48 +1,50 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
+    <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Luavm by DhavalKapil</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
 
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/github-light.css">
-    <meta name="viewport" content="width=device-width">
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+
+    <title>luaver by DhavalKapil</title>
   </head>
+
   <body>
-    <div class="wrapper">
-      <header>
-        <h1>Luavm</h1>
-        <p>Lua Version Manager - Command line tool to manage and switch between different versions of lua, LuaJIT and luarocks.</p>
+    <header>
+      <div class="inner">
+        <h1>luaver</h1>
+        <h2>Lua Version Manager - Command line tool to manage and switch between different versions of lua, LuaJIT and luarocks.</h2>
+        <a href="https://github.com/DhavalKapil/luaver" class="button"><small>View project on</small> GitHub</a>
+      </div>
+    </header>
 
-        <p class="view"><a href="https://github.com/DhavalKapil/luaver">View the Project on GitHub <small>DhavalKapil/luaver</small></a></p>
-
-
-        <ul>
-          <li><a href="https://github.com/DhavalKapil/luaver/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/DhavalKapil/luaver/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/DhavalKapil/luaver">View On <strong>GitHub</strong></a></li>
-        </ul>
-      </header>
-      <section>
-        <h1>
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>
 <a id="lua-version-manager---luaver" class="anchor" href="#lua-version-manager---luaver" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Lua Version Manager - luaver</h1>
 
-<p><a href="https://travis-ci.org/DhavalKapil/luaver"><img src="https://travis-ci.org/DhavalKapil/luaver.svg?branch=master" alt="Build Status"></a></p>
+<p><a href="https://travis-ci.org/DhavalKapil/luaver"><img src="https://travis-ci.org/DhavalKapil/luaver.svg?branch=master" alt="Build Status"></a> <a href="https://gitter.im/DhavalKapil/luaver?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img src="https://badges.gitter.im/DhavalKapil/luaver.svg" alt="Join the chat at https://gitter.im/DhavalKapil/luaver"></a> <a href="LICENSE.md"><img src="http://img.shields.io/badge/Licence-MIT-brightgreen.svg" alt="License"></a></p>
 
-<p>Command line tool to manage and switch between different versions of lua, LuaJIT and luarocks.</p>
+<p><strong>luaver</strong> helps to manage and switch between different versions of Lua, LuaJIT and Luarocks.</p>
 
 <h2>
 <a id="features" class="anchor" href="#features" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Features</h2>
 
 <ol>
-<li>Installs/Uninstalls any version of 'lua', 'LuaJIT' or 'luarocks' with a single command.</li>
-<li>Switches between different versions of 'lua', 'LuaJIT' or 'luarocks' easily and without glitches.</li>
-<li>Consistency between 'lua' and 'luarocks' maintained - Rocks and configurations for different lua versions are stored differently.</li>
+<li>Installs/Uninstalls any version of Lua, LuaJIT or luarocks with a single command.</li>
+<li>Switches between different versions of 'Lua', 'LuaJIT' or 'Luarocks' easily, without glitches.</li>
+<li>Consistency between 'Lua' and 'Luarocks' maintained - Rocks and configurations for different lua versions are stored differently.</li>
 </ol>
+
+<p><img src="http://i.imgur.com/dCCvNfR.gif" alt="gif animation showing usage of luaver"></p>
 
 <h2>
 <a id="requirements" class="anchor" href="#requirements" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Requirements</h2>
@@ -53,16 +55,33 @@
 
 <div class="highlight highlight-source-shell"><pre>sudo apt-get install libreadline-dev </pre></div>
 
-<p>Also, if you are planning to install earlier versions of Lua(which are 32 bit) on 64 bit machines, you may need to install some 32 bit libraries first: </p>
+<p>Also, if you are planning to install older versions of Lua(which are 32-bit) on 64-bit machines, you may need to install some 32-bit libraries: </p>
 
 <div class="highlight highlight-source-shell"><pre>sudo apt-get install lib32ncurses5-dev</pre></div>
 
 <h2>
 <a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2>
 
-<p>Run the following command to install</p>
+<h3>
+<a id="install-script" class="anchor" href="#install-script" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Install script</h3>
+
+<p>You can install from the script directly:</p>
 
 <div class="highlight highlight-source-shell"><pre>curl https://raw.githubusercontent.com/dhavalkapil/luaver/master/install.sh -o install.sh <span class="pl-k">&amp;&amp;</span> <span class="pl-c1">.</span> ./install.sh</pre></div>
+
+<p><em>Note: It will overwrite any <code>install.sh</code> in your current directory. Also, this file is no longer needed after the installation is complete.</em></p>
+
+<h3>
+<a id="installation-from-git-repository" class="anchor" href="#installation-from-git-repository" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation from Git Repository</h3>
+
+<p>First clone <code>luaver</code> on your local machine using git:</p>
+
+<div class="highlight highlight-source-shell"><pre>git clone https://github.com/DhavalKapil/luaver</pre></div>
+
+<p>Then, run the installation script:</p>
+
+<div class="highlight highlight-source-shell"><pre><span class="pl-c1">cd</span> luaver
+<span class="pl-c1">.</span> ./install.sh</pre></div>
 
 <h2>
 <a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h2>
@@ -70,11 +89,11 @@
 <h3>
 <a id="sample-usage" class="anchor" href="#sample-usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Sample usage:</h3>
 
-<div class="highlight highlight-source-shell"><pre>luaver install 5.3.1             <span class="pl-c"># Installs lua version 5.3.1</span>
-luaver install 5.3.0             <span class="pl-c"># Installs lua version 5.3.0</span>
-luaver use 5.3.1                 <span class="pl-c"># Switches to lua version 5.3.1</span>
-luaver install-luarocks 2.3.0    <span class="pl-c"># Installs luarocks version 2.3.0</span>
-luaver uninstall 5.3.0           <span class="pl-c"># Uninstalls lua version 5.3.0</span></pre></div>
+<div class="highlight highlight-source-shell"><pre>luaver install 5.3.1             <span class="pl-c"># Installs Lua version 5.3.1</span>
+luaver install 5.3.0             <span class="pl-c"># Installs Lua version 5.3.0</span>
+luaver use 5.3.1                 <span class="pl-c"># Switches to Lua version 5.3.1</span>
+luaver install-luarocks 2.3.0    <span class="pl-c"># Installs Luarocks version 2.3.0</span>
+luaver uninstall 5.3.0           <span class="pl-c"># Uninstalls Lua version 5.3.0</span></pre></div>
 
 <h3>
 <a id="complete-usage" class="anchor" href="#complete-usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Complete usage:</h3>
@@ -89,12 +108,12 @@ Usage:
    luaver unset-default                     Unsets the default lua version
    luaver uninstall <span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>               Uninstalls lua-<span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>
    luaver list                              Lists installed lua versions
-   luaver install-luajit <span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>          Installs LuaJIT-<span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>
-   luaver use-luajit <span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>              Switches to LuaJIT-<span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>
-   luaver set-default-luajit <span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>      Sets <span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span> as default <span class="pl-k">for</span> LuaJIT
-   luaver unset-default-luajit              Unsets the default LuaJIT version
-   luaver uninstall-luajit <span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>        Uninstalls LuaJIT-<span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>
-   luaver list-luajit                       Lists installed LuaJIT versions
+   luaver install-luajit <span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>          Installs luajit-<span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>
+   luaver use-luajit <span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>              Switches to luajit-<span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>
+   luaver set-default-luajit <span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>      Sets <span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span> as default <span class="pl-k">for</span> luajit
+   luaver unset-default-luajit              Unsets the default luajit version
+   luaver uninstall-luajit <span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>        Uninstalls luajit-<span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>
+   luaver list-luajit                       Lists installed luajit versions
    luaver install-luarocks <span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>        Installs luarocks<span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>
    luaver use-luarocks <span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>            Switches to luarocks-<span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>
    luaver set-default-luarocks <span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span>    Sets <span class="pl-k">&lt;</span>version<span class="pl-k">&gt;</span> as default <span class="pl-k">for</span> luarocks
@@ -113,23 +132,25 @@ Usage:
 <a id="license" class="anchor" href="#license" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>License</h2>
 
 <p>luaver is licensed under the <a href="http://dhaval.mit-license.org/">MIT license</a>.</p>
-      </section>
-      <footer>
-        <p>This project is maintained by <a href="https://github.com/DhavalKapil">DhavalKapil</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
-      </footer>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/DhavalKapil/luaver/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/DhavalKapil/luaver/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/DhavalKapil/luaver"></a> is maintained by <a href="https://github.com/DhavalKapil">DhavalKapil</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
     </div>
-    <script src="javascripts/scale.fix.js"></script>
-    <script type="text/javascript">
-            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-          </script>
-<script type="text/javascript">
-            try {
-              var pageTracker = _gat._getTracker("UA-51308700-1");
-            pageTracker._trackPageview();
-            } catch(err) {}
-          </script>
-    
+
+  
   </body>
 </html>
