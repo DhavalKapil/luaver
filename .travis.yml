@@ -11,7 +11,7 @@ before_install:
 
 install:
   - git clone --depth 1 https://github.com/sstephenson/bats.git
-  - curl https://raw.githubusercontent.com/dhavalkapil/luaver/master/install.sh -o install.sh && . ./install.sh
+  - curl https://raw.githubusercontent.com/dhavalkapil/luaver/v1.0.0/install.sh -o install.sh && . ./install.sh
 
 script:
   - ./bats/bin/bats tests

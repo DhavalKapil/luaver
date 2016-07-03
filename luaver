@@ -1,12 +1,13 @@
 #!/bin/bash
 
 # Lua Version Manager
+# Managing and switching between different versions of Lua, LuaJIT and Luarocks made easy
 #
 # Developed by Dhaval Kapil <me@dhavalkapil.com>
 #
 # MIT license http://www.opensource.org/licenses/mit-license.php
 
-__luaver_VERSION="1.0.0-alpha"
+__luaver_VERSION="1.0.0"
 
 # Directories and files to be used
 

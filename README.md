@@ -36,7 +36,7 @@ sudo apt-get install lib32ncurses5-dev
 You can install from the script directly:
 
 ```sh
-curl https://raw.githubusercontent.com/dhavalkapil/luaver/master/install.sh -o install.sh && . ./install.sh
+curl https://raw.githubusercontent.com/dhavalkapil/luaver/v1.0.0/install.sh -o install.sh && . ./install.sh
 ```
 
 _Note: It will overwrite any `install.sh` in your current directory. Also, this file is no longer needed after the installation is complete._

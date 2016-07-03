@@ -1,7 +1,7 @@
 #!/bin/bash
 
 PROGRAM="luaver"
-SRC_URL="https://raw.githubusercontent.com/dhavalkapil/luaver/master/${PROGRAM}"
+SRC_URL="https://raw.githubusercontent.com/dhavalkapil/luaver/v1.0.0/${PROGRAM}"
 
 # Directories to be used
 LUAVER_DIR="${HOME}/.luaver"             # The luaver directory
