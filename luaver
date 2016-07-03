@@ -262,6 +262,12 @@ __luaver_get_platform()
 
     __luaver_print "Detecting platform"
 
+    if [[ "${platform_str}" =~ "darwin" ]]
+    then
+        __luaver_print "Platform detected: macosx"
+        eval "$1='macosx'"
+        return
+    fi
     for platform in "${platforms[@]}"
     do
         if [[ "${platform_str}" =~ "${platform}" ]]
