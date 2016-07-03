@@ -9,6 +9,7 @@
 1. Installs/Uninstalls any version of Lua, LuaJIT or luarocks with a single command.
 2. Switches between different versions of 'Lua', 'LuaJIT' or 'Luarocks' easily, without glitches.
 3. Consistency between 'Lua' and 'Luarocks' maintained - Rocks and configurations for different lua versions are stored differently.
+4. Every terminal session can have a different environment configured. Default versions can also be configured.
 
 ![gif animation showing usage of luaver](http://i.imgur.com/dCCvNfR.gif)
 
