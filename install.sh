@@ -1,5 +1,3 @@
-#!/bin/bash
-
 PROGRAM="luaver"
 SRC_URL="https://raw.githubusercontent.com/dhavalkapil/luaver/v1.0.0/${PROGRAM}"
 
@@ -85,7 +83,7 @@ set_up_path()
         then
             profile="$HOME/.bashrc"
         fi
-    elif [ "shell_type" = "zsh" ]
+    elif [ "${shell_type}" = "zsh" ]
     then
         if [ -f "$HOME/.zshrc" ]
         then

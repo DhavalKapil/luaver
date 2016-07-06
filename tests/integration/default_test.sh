@@ -1,5 +1,3 @@
-#!/bin/bash
-
 . ~/.luaver/luaver
 
 # Confirming default lua version
