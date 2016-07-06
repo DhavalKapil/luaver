@@ -18,3 +18,7 @@ script:
   - ./bats/bin/bats tests
   - ./tests/integration/test.sh
 
+env:
+  - SHELL=bash
+  - SHELL=zsh
+  - SHELL=sh
