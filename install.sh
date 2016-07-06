@@ -58,8 +58,16 @@ install()
         rm $PROGRAM
         print "Downloading fresh '${PROGRAM}'"
     fi
-        
-    wget $SRC_URL
+
+    if [ "${__luaver_env}" == "testing" ]
+    then
+        cd -
+        cp $PROGRAM $LUAVER_DIR/
+        cd $LUAVER_DIR
+    else
+        wget $SRC_URL
+    fi
+
     chmod 775 $PROGRAM
 }
 

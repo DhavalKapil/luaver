@@ -8,11 +8,13 @@ addons:
 before_install:
   - wget --version
   - curl --version
+  - export __luaver_env="testing"
 
 install:
   - git clone --depth 1 https://github.com/sstephenson/bats.git
-  - curl https://raw.githubusercontent.com/dhavalkapil/luaver/v1.0.0/install.sh -o install.sh && . ./install.sh
+  - . ./install.sh
 
 script:
   - ./bats/bin/bats tests
   - ./tests/integration/test.sh
+
