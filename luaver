@@ -37,7 +37,7 @@ __luaver_error()
 # Printing bold text - TODO
 __luaver_print()
 {
-    if [ ! $__luaver_verbose == 0 ]
+    if [ ! $__luaver_verbose = 0 ]
     then
         tput bold
         printf "==>  $1\n"
@@ -119,27 +119,27 @@ __luaver_init()
 # Checking whether a particular tool exists or not
 __luaver_exists()
 {
-    if [ "$1" == "lua" ]
+    if [ "$1" = "lua" ]
     then
-        if [[ $(which lua) == ${__luaver_LUA_DIR}* ]]
+        if [[ $(which lua) = ${__luaver_LUA_DIR}* ]]
         then
             return 0
         else
             return 1
         fi
     fi
-    if [ "$1" == "luajit" ]
+    if [ "$1" = "luajit" ]
     then
-        if [[ $(which luajit) == ${__luaver_LUAJIT_DIR}* ]]
+        if [[ $(which luajit) = ${__luaver_LUAJIT_DIR}* ]]
         then
             return 0
         else
             return 1
         fi
     fi
-    if [ "$1" == "luarocks" ]
+    if [ "$1" = "luarocks" ]
     then
-        if [[ $(which luarocks) == ${__luaver_LUAROCKS_DIR}* ]]
+        if [[ $(which luarocks) = ${__luaver_LUAROCKS_DIR}* ]]
         then
             return 0
         else
@@ -497,7 +497,7 @@ __luaver_uninstall_lua()
 
     __luaver_uninstall $lua_name $__luaver_LUA_DIR $version
 
-    if [ "${version}" == "${current_version}" ]
+    if [ "${version}" = "${current_version}" ]
     then
         __luaver_remove_previous_paths "${__luaver_LUA_DIR}"
     fi
@@ -516,7 +516,7 @@ __luaver_list_lua()
         __luaver_print "Installed versions: "
         for version in "${installed_versions[@]}"
         do
-            if [ "${version}" == "${current_version}" ]
+            if [ "${version}" = "${current_version}" ]
             then
                 __luaver_print "lua-${version} <--"
             else 
@@ -606,7 +606,7 @@ __luaver_uninstall_luajit()
 
     __luaver_uninstall $luajit_name $__luaver_LUAJIT_DIR $version
 
-    if [ "${version}" == "${current_version}" ]
+    if [ "${version}" = "${current_version}" ]
     then
         __luaver_remove_previous_paths "${__luaver_LUAJIT_DIR}"
     fi
@@ -625,7 +625,7 @@ __luaver_list_luajit()
         __luaver_print "Installed versions: "
         for version in "${installed_versions[@]}"
         do
-            if [ "${version}" == "${current_version}" ]
+            if [ "${version}" = "${current_version}" ]
             then
                 __luaver_print "LuaJIT-${version} <--"
             else
@@ -639,7 +639,7 @@ __luaver_install_luarocks()
 {
     # Checking whether any version of lua is installed or not
     __luaver_get_current_lua_version lua_version
-    if [ "" == "${lua_version}" ]
+    if [ "" = "${lua_version}" ]
     then
         __luaver_error "No lua version set"
     fi
@@ -687,7 +687,7 @@ __luaver_use_luarocks()
 
     __luaver_get_current_lua_version_short lua_version
 
-    if [ "${lua_version}" == "" ]
+    if [ "${lua_version}" = "" ]
     then
         __luaver_error "You need to first switch to a lua installation"
     fi
@@ -745,7 +745,7 @@ __luaver_uninstall_luarocks()
 
     __luaver_uninstall $luarocks_name $__luaver_LUAROCKS_DIR "${version}_${lua_version}"
 
-    if [ "${version}" == "${current_version}" ]
+    if [ "${version}" = "${current_version}" ]
     then
         __luaver_remove_previous_paths "${__luaver_LUAROCKS_DIR}"
     fi
@@ -768,7 +768,7 @@ __luaver_list_luarocks()
             luarocks_version=${version%_*}
             lua_version=${version#*_}
 
-            if [ "${luarocks_version}" == "${current_luarocks_version}" ] && [ "${lua_version}" == "${current_lua_version}" ]
+            if [ "${luarocks_version}" = "${current_luarocks_version}" ] && [ "${lua_version}" = "${current_lua_version}" ]
             then
                 __luaver_print "luarocks-${luarocks_version} (lua version: ${lua_version}) <--"
             else
@@ -786,15 +786,15 @@ __luaver_current()
 
     __luaver_print "Current versions:"
 
-    if [ ! "${lua_version}" == "" ]
+    if [ ! "${lua_version}" = "" ]
     then
         __luaver_print "lua-${lua_version}"
     fi
-    if [ ! "${luajit_version}" == "" ]
+    if [ ! "${luajit_version}" = "" ]
     then
         __luaver_print "LuaJIT-${luajit_version}"
     fi
-    if [ ! "${luarocks_version}" == "" ]
+    if [ ! "${luarocks_version}" = "" ]
     then
         __luaver_print "luarocks-${luarocks_version}"
     fi
