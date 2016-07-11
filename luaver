@@ -256,8 +256,9 @@ __luaver_uninstall()
 # Returns the platform
 __luaver_get_platform()
 {
+    local platforms
     local platform_str=$(uname | tr "[:upper:]" "[:lower:]")
-    local platforms=("aix" "bsd" "c89" "freebsd" "generic" "linux" "macosx" "mingw" "posix" "solaris")
+    platforms=("aix" "bsd" "c89" "freebsd" "generic" "linux" "macosx" "mingw" "posix" "solaris")
 
     __luaver_print "Detecting platform"
 
@@ -505,7 +506,8 @@ __luaver_uninstall_lua()
 
 __luaver_list_lua()
 {
-    local installed_versions=($(ls $__luaver_LUA_DIR/))
+    local installed_versions
+    installed_versions=($(ls $__luaver_LUA_DIR/))
     
     __luaver_get_current_lua_version current_version
 
