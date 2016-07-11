@@ -8,7 +8,8 @@ LUA_DIR="${LUAVER_DIR}/lua"              # Where lua source is built
 LUAJIT_DIR="${LUAVER_DIR}/luajit"        # Where luajit source is built
 LUAROCKS_DIR="${LUAVER_DIR}/luarocks"    # Where luarocks source is built
 
-# Initializes directories
+# Present directory
+present_dir=$(pwd)
 
 # Printing bold text - TODO
 print()
@@ -18,6 +19,7 @@ print()
     tput sgr0
 }
 
+# Initializes directories
 init()
 {
     print "Setting up directory structure..."
@@ -58,13 +60,12 @@ install()
     fi
     if [ "${__luaver_env}" = "testing" ]
     then
-        cd -
+        cd $present_dir
         cp "./${PROGRAM}" "${LUAVER_DIR}/"
         cd $LUAVER_DIR
     else
         wget $SRC_URL
     fi
-
     chmod 775 $PROGRAM
 }
 
@@ -104,8 +105,9 @@ set_up_path()
         fi
         source $profile
     fi
-    
-    cd -
+    pwd
+    cd $present_dir
+    pwd
 }
 
 print "Installing '${PROGRAM}'..."
