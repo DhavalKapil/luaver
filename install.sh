@@ -56,11 +56,10 @@ install()
         rm $PROGRAM
         print "Downloading fresh '${PROGRAM}'"
     fi
-
-    if [ "${__luaver_env}" == "testing" ]
+    if [ "${__luaver_env}" = "testing" ]
     then
         cd -
-        cp $PROGRAM $LUAVER_DIR/
+        cp "./${PROGRAM}" "${LUAVER_DIR}/"
         cd $LUAVER_DIR
     else
         wget $SRC_URL
@@ -77,7 +76,7 @@ set_up_path()
     print "Detected SHELL_TYPE: ${shell_type}"
     
     local profile=""
-    if [ "${shell_type}" == "bash" ]
+    if [ "${shell_type}" = "bash" ]
     then
         if [ -f "$HOME/.bashrc" ]
         then
@@ -91,7 +90,7 @@ set_up_path()
         fi
     fi
     
-    if [ "${profile}" == "" ]
+    if [ "${profile}" = "" ]
     then
         print "Unable to detect profile(no ~/.bashrc, ~/.zshrc found)"
         print "Add the following at the end of the correct file yourself:"
