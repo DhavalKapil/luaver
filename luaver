@@ -194,7 +194,8 @@ __luaver_download_and_unpack()
     # Checking if archive already downloaded or not
     if [ -e $unpack_dir_name ]
     then
-        read -r -p "${unpack_dir_name} has already been downloaded. Download again? [Y/n]: " choice
+        __luaver_print "${unpack_dir_name} has already been downloaded. Download again? [Y/n]: "
+        read -r choice
         case $choice in
             [yY][eE][sS] | [yY] )
                 __luaver_exec_command "rm -r ${unpack_dir_name}"
@@ -419,7 +420,8 @@ __luaver_install_lua()
 
     __luaver_exec_command "make ${platform} install INSTALL_TOP=${__luaver_LUA_DIR}/${version}"
 
-    read -r -p "${lua_dir_name} successfully installed. Do you want to switch to this version? [Y/n]: " choice
+    __luaver_print "${lua_dir_name} successfully installed. Do you want to switch to this version? [Y/n]: "
+    read -r choice
     case $choice in
         [yY][eE][sS] | [yY] )
             __luaver_use_lua $version
@@ -439,7 +441,8 @@ __luaver_use_lua()
 
     if [ ! -e $version ]
     then
-        read -r -p "${lua_name} is not installed. Do you want to install it? [Y/n]: " choice
+        __luaver_print "${lua_name} is not installed. Do you want to install it? [Y/n]: "
+        read -r choice
         case $choice in
             [yY][eE][sS] | [yY] )
                 __luaver_install_lua $version
@@ -547,7 +550,8 @@ __luaver_install_luajit()
     __luaver_exec_command "make PREFIX=${__luaver_LUAJIT_DIR}/${version}"
     __luaver_exec_command "make install PREFIX=${__luaver_LUAJIT_DIR}/${version}"
 
-    read -r -p "${luajit_dir_name} successfully installed. Do you want to switch to this version? [Y/n]: " choice
+    __luaver_print "${luajit_dir_name} successfully installed. Do you want to switch to this version? [Y/n]: "
+    read -r choice
     case $choice in
         [yY][eE][sS] | [yY] )
             __luaver_use_luajit $version
@@ -567,7 +571,8 @@ __luaver_use_luajit()
 
     if [ ! -e $version ]
     then
-        read -r -p "${luajit_name} is not installed. Want to install it? [Y/n]: " choice
+        __luaver_print "${luajit_name} is not installed. Want to install it? [Y/n]: "
+        read -r choice
         case $choice in
             [yY][eE][sS] | [yY] )
                 __luaver_install_lua $version
@@ -673,7 +678,8 @@ __luaver_install_luarocks()
     __luaver_exec_command "make build"
     __luaver_exec_command "make install"
 
-    read -r -p "${luarocks_dir_name} successfully installed. Do you want to switch to this version? [Y/n]: " choice
+    __luaver_print "${luarocks_dir_name} successfully installed. Do you want to switch to this version? [Y/n]: "
+    read -r choice
     case $choice in
         [yY][eE][sS] | [yY] )
             __luaver_use_luarocks $version
@@ -700,7 +706,8 @@ __luaver_use_luarocks()
 
     if [ ! -e "${version}_${lua_version}" ]
     then
-        read -r -p "${luarocks_name} is not installed with lua version ${lua_version}. Want to install it? [Y/n]: " choice
+        __luaver_print "${luarocks_name} is not installed with lua version ${lua_version}. Want to install it? [Y/n]: "
+        read -r choice
         case $choice in
             [yY][eE][sS] | [yY] )
                 __luaver_install_luarocks $version
