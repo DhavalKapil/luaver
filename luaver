@@ -668,12 +668,12 @@ __luaver_install_luarocks()
 
     __luaver_print "Compiling ${luarocks_dir_name}"
 
-    __luaver_exec_command "./configure
-                        --prefix=${__luaver_LUAROCKS_DIR}/${version}_${lua_version_short}
-                        --with-lua=${__luaver_LUA_DIR}/${lua_version}
-                        --with-lua-bin=${__luaver_LUA_DIR}/${lua_version}/bin
-                        --with-lua-include=${__luaver_LUA_DIR}/${lua_version}/include
-                        --with-lua-lib=${__luaver_LUA_DIR}/${lua_version}/lib
+    __luaver_exec_command "./configure \
+                        --prefix=${__luaver_LUAROCKS_DIR}/${version}_${lua_version_short} \
+                        --with-lua=${__luaver_LUA_DIR}/${lua_version} \
+                        --with-lua-bin=${__luaver_LUA_DIR}/${lua_version}/bin \
+                        --with-lua-include=${__luaver_LUA_DIR}/${lua_version}/include \
+                        --with-lua-lib=${__luaver_LUA_DIR}/${lua_version}/lib \
                         --versioned-rocks-dir"
 
     __luaver_exec_command "make build"
