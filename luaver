@@ -66,7 +66,7 @@ __luaver_exec_command()
 # Perform some initialization
 __luaver_init()
 {
-    __luaver_present_dir=$(pwd)
+    __luaver_present_dir="\"$(pwd)\""
 
     if [ ! -e $__luaver_LUAVER_DIR ]
     then
@@ -819,7 +819,7 @@ __luaver_init
 
 luaver()
 {
-    __luaver_present_dir=$(pwd)
+    __luaver_present_dir="\"$(pwd)\""
 
     case $1 in
         "help" )                    __luaver_usage;;
