@@ -16,7 +16,7 @@ install:
 
 script:
   - ./bats/bin/bats tests
-  - ./tests/integration/test.sh
+  - ./tests/integration\ tests/test.sh
 
 env:
   - SHELL=bash

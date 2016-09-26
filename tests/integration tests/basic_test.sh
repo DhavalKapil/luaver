@@ -45,7 +45,7 @@ fi
 
 luarocks install --server=http://luarocks.org/dev elasticsearch
 
-lua ./tests/integration/luarocks_test.lua
+lua ./tests/integration\ tests/luarocks_test.lua
 
 if [ $? == 1 ]
 then
@@ -81,7 +81,7 @@ fi
 
 luarocks install --server=http://luarocks.org/dev elasticsearch
 
-lua ./tests/integration/luarocks_test.lua
+lua ./tests/integration\ tests/luarocks_test.lua
 
 if [ $? == 1 ]
 then
