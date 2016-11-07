@@ -154,12 +154,13 @@ __luaver_exists()
 __luaver_download()
 {
     local url=$1
+    local filename=${url##*/}
 
     __luaver_print "Downloading from ${url}"
 
     if __luaver_exists "wget"
     then
-        __luaver_exec_command "wget ${url}"
+        __luaver_exec_command "wget -O ${filename} ${url}"
     else
         __luaver_error "'wget' must be installed"
     fi
