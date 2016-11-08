@@ -163,8 +163,11 @@ __luaver_download()
     if __luaver_exists "wget"
     then
         __luaver_exec_command "wget -O ${filename} ${url}"
+    elif __luaver_exists "curl"
+    then
+        __luaver_exec_command "curl -LO ${url}"
     else
-        __luaver_error "'wget' must be installed"
+        __luaver_error "'wget' or 'curl' must be installed"
     fi
 
     __luaver_print "Download successful"
