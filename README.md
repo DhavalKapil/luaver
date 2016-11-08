@@ -15,7 +15,7 @@
 
 ## Requirements
 
-Requires `wget`, `make`.
+Requires `make`, either of `wget` or `curl`.
 
 You may need to install some dependencies:
 
