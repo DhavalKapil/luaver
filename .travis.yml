@@ -2,23 +2,37 @@ language: generic
 
 addons:
   apt_packages:
+  - cabal-install
+  - ghc
   - zsh
   - ksh
+
+cache:
+  directories:
+    - $HOME/.ghc
+    - $HOME/.cabal
 
 before_install:
   - wget --version
   - curl --version
   - export __luaver_env="testing"
+  - if [[ -n $SHELLCHECK ]]; then cabal update && cabal install transformers-0.4.3.0 ShellCheck && shellcheck --version; fi
 
 install:
   - if [[ $SHELL == bash ]]; then git clone --depth 1 https://github.com/sstephenson/bats.git; fi
   - . ./install.sh
 
 script:
-  - if [[ $SHELL == bash ]]; then ./bats/bin/bats tests; fi
-  - $SHELL ./tests/integration\ tests/test.sh
+  - if [[ -n $SHELLCHECK ]]; then shellcheck -s bash luaver && shellcheck -s zsh && shellcheck -s ksh && shellcheck -s sh; fi; true # shellcheck is temporarily disabled
+  #- if [[ -n $SHELLCHECK ]]; then shellcheck -s bash luaver && shellcheck -s zsh && shellcheck -s ksh && shellcheck -s sh; fi
+  - if [[ -z $SHELLCHECK ]] && [[ $SHELL == bash ]]; then ./bats/bin/bats tests; fi
+  - if [[ -z $SHELLCHECK ]]; then $SHELL ./tests/integration\ tests/test.sh; fi
 
 env:
-  - SHELL=bash
-  - SHELL=zsh
-  - SHELL=sh
+  global:
+    - PATH="$HOME/.cabal/bin:$PATH"
+  matrix:
+    - SHELL=bash
+    - SHELL=zsh
+    - SHELL=sh
+    - SHELLCHECK=true
