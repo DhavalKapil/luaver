@@ -11,12 +11,12 @@ before_install:
   - export __luaver_env="testing"
 
 install:
-  - git clone --depth 1 https://github.com/sstephenson/bats.git
+  - if [[ $SHELL == bash ]]; then git clone --depth 1 https://github.com/sstephenson/bats.git; fi
   - . ./install.sh
 
 script:
-  - ./bats/bin/bats tests
-  - ./tests/integration\ tests/test.sh
+  - if [[ $SHELL == bash ]]; then ./bats/bin/bats tests; fi
+  - $SHELL ./tests/integration\ tests/test.sh
 
 env:
   - SHELL=bash
