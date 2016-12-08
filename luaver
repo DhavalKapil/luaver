@@ -79,6 +79,17 @@ __luaver_get_make_tool()
     fi
     # TODO check MacOS compatibility
 }
+
+# Check whether required tools are installed
+# Argument is a list of tools required for LuaVer to work properly
+__luaver_check_requirements()
+{
+    for tool in "$@"
+    do
+        command -v $tool &> /dev/null || __luaver_error "LuaVer: $tool is required"
+    done
+}
+
 # Perform some initialization
 __luaver_init()
 {
@@ -824,6 +835,7 @@ __luaver_version()
 
 # Init environment
 __luaver_init
+__luaver_check_requirements $(__luaver_get_make_tool)
 
 luaver()
 {
