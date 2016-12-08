@@ -65,6 +65,20 @@ __luaver_exec_command()
     fi
 }
 
+# Return the correct make utility for this OS
+__luaver_get_make_tool()
+{
+    # Care for make tool compatibility
+    # If OS is *BSD, require gmake
+    if [[ $OSTYPE =~ linux ]]
+    then
+        echo "make"
+    elif [[ $OSTYPE =~ bsd ]]
+    then
+        echo "gmake"
+    fi
+    # TODO check MacOS compatibility
+}
 # Perform some initialization
 __luaver_init()
 {
@@ -419,7 +433,7 @@ __luaver_install_lua()
 
     __luaver_print "Compiling ${lua_dir_name}"
 
-    __luaver_exec_command "make ${platform} install INSTALL_TOP=${__luaver_LUA_DIR}/${version}"
+    __luaver_exec_command "$(__luaver_get_make_tool) ${platform} install INSTALL_TOP=${__luaver_LUA_DIR}/${version}"
 
     read -r -p "${lua_dir_name} successfully installed. Do you want to switch to this version? [Y/n]: " choice
     case $choice in
@@ -545,8 +559,8 @@ __luaver_install_luajit()
 
     __luaver_print "Compiling ${luajit_dir_name}"
 
-    __luaver_exec_command "make PREFIX=${__luaver_LUAJIT_DIR}/${version}"
-    __luaver_exec_command "make install PREFIX=${__luaver_LUAJIT_DIR}/${version}"
+    __luaver_exec_command "$(__luaver_get_make_tool) PREFIX=${__luaver_LUAJIT_DIR}/${version}"
+    __luaver_exec_command "$(__luaver_get_make_tool) install PREFIX=${__luaver_LUAJIT_DIR}/${version}"
 
     read -r -p "${luajit_dir_name} successfully installed. Do you want to switch to this version? [Y/n]: " choice
     case $choice in
@@ -671,8 +685,8 @@ __luaver_install_luarocks()
                         --with-lua-lib=${__luaver_LUA_DIR}/${lua_version}/lib
                         --versioned-rocks-dir"
 
-    __luaver_exec_command "make build"
-    __luaver_exec_command "make install"
+    __luaver_exec_command "$(__luaver_get_make_tool) build"
+    __luaver_exec_command "$(__luaver_get_make_tool) install"
 
     read -r -p "${luarocks_dir_name} successfully installed. Do you want to switch to this version? [Y/n]: " choice
     case $choice in
