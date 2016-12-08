@@ -200,7 +200,7 @@ __luaver_download_and_unpack()
         read -r choice
         case $choice in
             [yY][eE][sS] | [yY] )
-                __luaver_exec_command rm -r "${unpack_dir_name}"
+                __luaver_exec_command rm -fr "${unpack_dir_name}"
                 ;;
         esac
     fi
@@ -212,7 +212,7 @@ __luaver_download_and_unpack()
         __luaver_download $url
         __luaver_print "Extracting archive"
         __luaver_unpack $archive_name
-        __luaver_exec_command rm "${archive_name}"
+        __luaver_exec_command rm -f "${archive_name}"
     fi
 }
 
@@ -250,7 +250,7 @@ __luaver_uninstall()
         __luaver_error "${package_name} is not installed"
     fi
 
-    __luaver_exec_command rm -r "${package_dir}"
+    __luaver_exec_command rm -fr "${package_dir}"
 
     __luaver_print "Successfully uninstalled ${package_name}"
 }
@@ -489,7 +489,7 @@ __luaver_set_default_lua()
 
 __luaver_unset_default_lua()
 {
-    __luaver_exec_command rm "${__luaver_LUA_DEFAULT_FILE}"
+    __luaver_exec_command rm -f "${__luaver_LUA_DEFAULT_FILE}"
     __luaver_print "Removed default version for lua"
 }
 
@@ -601,7 +601,7 @@ __luaver_set_default_luajit()
 
 __luaver_unset_default_luajit()
 {
-    __luaver_exec_command rm "${__luaver_LUAJIT_DEFAULT_FILE}"
+    __luaver_exec_command rm -f "${__luaver_LUAJIT_DEFAULT_FILE}"
     __luaver_print "Removed default version for LuaJIT"
 }
 
@@ -739,7 +739,7 @@ __luaver_set_default_luarocks()
 
 __luaver_unset_default_luarocks()
 {
-    __luaver_exec_command rm "${__luaver_LUAROCKS_DEFAULT_FILE}"
+    __luaver_exec_command rm -f "${__luaver_LUAROCKS_DEFAULT_FILE}"
     __luaver_print "Removed default version for luarocks"
 }
 
