@@ -258,9 +258,8 @@ __luaver_uninstall()
 # Returns the platform
 __luaver_get_platform()
 {
-    local platforms
     local platform_str=$(uname | tr "[:upper:]" "[:lower:]")
-    platforms="aix,bsd,c89,freebsd,generic,linux,macosx,mingw,posix,solaris"
+    local platforms="aix,bsd,c89,freebsd,generic,linux,macosx,mingw,posix,solaris"
 
     echo "Detecting platform" 1>&2
 
@@ -509,17 +508,12 @@ __luaver_uninstall_lua()
 
 __luaver_list_lua()
 {
-    local installed_versions
-    installed_versions=($(ls $__luaver_LUA_DIR/))
-    
-    current_version=$(__luaver_get_current_lua_version)
+    local current_version=$(__luaver_get_current_lua_version)
 
-    if [ ${#installed_versions[@]} -eq 0 ]
+    if [ "$(ls -A $__luaver_LUA_DIR/)" ]
     then
-        __luaver_print "No version of lua is installed"
-    else
         __luaver_print "Installed versions: "
-        for version in "${installed_versions[@]}"
+        for version in $(ls $__luaver_LUA_DIR/)
         do
             if [ "${version}" = "${current_version}" ]
             then
@@ -528,6 +522,8 @@ __luaver_list_lua()
                 __luaver_print "lua-${version}"
             fi
         done
+    else
+        __luaver_print "No version of lua is installed"
     fi
 }
 
@@ -621,16 +617,12 @@ __luaver_uninstall_luajit()
 
 __luaver_list_luajit()
 {
-    local installed_versions=($(ls $__luaver_LUAJIT_DIR/))
+    local current_version=$(__luaver_get_current_luajit_version)
 
-    current_version=$(__luaver_get_current_luajit_version)
-
-    if [ ${#installed_versions[@]} -eq 0 ]
+    if [ "$(ls -A $__luaver_LUAJIT_DIR/)" ]
     then
-        __luaver_print "No version of LuaJIT is installed"
-    else
         __luaver_print "Installed versions: "
-        for version in "${installed_versions[@]}"
+        for version in $(ls $__luaver_LUAJIT_DIR/)
         do
             if [ "${version}" = "${current_version}" ]
             then
@@ -639,6 +631,8 @@ __luaver_list_luajit()
                 __luaver_print "LuaJIT-${version}"
             fi
         done
+    else
+        __luaver_print "No version of LuaJIT is installed"
     fi
 }
 
@@ -762,17 +756,13 @@ __luaver_uninstall_luarocks()
 
 __luaver_list_luarocks()
 {
-    local installed_versions=($(ls $__luaver_LUAROCKS_DIR/))
+    local current_luarocks_version=$(__luaver_get_current_luarocks_version)
+    local current_lua_version=$(__luaver_get_lua_version_by_current_luarocks)
 
-    current_luarocks_version=$(__luaver_get_current_luarocks_version)
-    current_lua_version=$(__luaver_get_lua_version_by_current_luarocks)
-
-    if [ ${#installed_versions[@]} -eq 0 ]
+    if [ "$(ls -A $__luaver_LUAROCKS_DIR/)" ]
     then
-        __luaver_print "No version of luarocks is installed"
-    else
         __luaver_print "Installed versions: "
-        for version in "${installed_versions[@]}"
+        for version in $(ls $__luaver_LUAROCKS_DIR/)
         do
             luarocks_version=${version%_*}
             lua_version=${version#*_}
@@ -784,6 +774,8 @@ __luaver_list_luarocks()
                 __luaver_print "luarocks-${luarocks_version} (lua version: ${lua_version})"
             fi
         done
+    else
+        __luaver_print "No version of luarocks is installed"
     fi
 }
 
