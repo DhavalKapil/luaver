@@ -79,7 +79,7 @@ then
     exit 1
 fi
 
-luarocks install --server=http://luarocks.org/dev elasticsearch
+luarocks install elasticsearch
 
 lua ./tests/integration\ tests/luarocks_test.lua
 
