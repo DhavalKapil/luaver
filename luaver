@@ -262,29 +262,16 @@ __luaver_uninstall()
 # Returns the platform
 __luaver_get_platform()
 {
-    local platform_str=$(uname | tr "[:upper:]" "[:lower:]")
-    local platforms="aix,bsd,c89,freebsd,generic,linux,macosx,mingw,posix,solaris"
-
-    echo "Detecting platform" 1>&2
-
-    if [ "${platform_str}" = "darwin" ]
-    then
-        echo "Platform detected: macosx" 1>&2
-        echo "macosx"
-        return
-    fi
-
-    # Checking for substring
-    if test "${platforms#*$platform_str}" != "$platforms"
-    then
-        echo "Platform detected: ${platform_str}" 1>&2
-        echo "$platform_str"
-        return
-    fi
-
-    # Default platform
-    echo "Unable to detect platform. Using default 'linux'" 1>&2
-    echo "linux"
+    case $(uname -s 2>/dev/null) in
+        Linux )                    echo linux ;;
+        FreeBSD )                  echo freebsd ;;
+        *BSD* )                    echo bsd ;;
+        Darwin )                   echo macosx ;;
+        CYGWIN* | MINGW* | MSYS* ) echo mingw ;;
+        AIX )                      echo aix ;;
+        SunOS )                    echo solaris ;;
+        * )                        echo posix
+    esac
 }
 
 # Returns the current lua version
