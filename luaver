@@ -270,7 +270,7 @@ __luaver_get_platform()
         CYGWIN* | MINGW* | MSYS* ) echo mingw ;;
         AIX )                      echo aix ;;
         SunOS )                    echo solaris ;;
-        * )                        echo posix
+        * )                        echo unknown
     esac
 }
 
@@ -403,7 +403,15 @@ __luaver_install_lua()
 
     __luaver_download_and_unpack $lua_dir_name $archive_name $url
 
+    __luaver_print "Detecting platform"
     platform=$(__luaver_get_platform)
+    if [ "${platform}" = unknown ]
+    then
+        __luaver_print "Unable to detect platform. Using default 'posix'"
+        platform=posix
+    else
+        __luaver_print "Platform detected: ${platform}"
+    fi
 
     __luaver_exec_command cd "${lua_dir_name}"
 
