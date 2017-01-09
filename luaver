@@ -117,13 +117,13 @@ __luaver_init()
 # Checking whether a particular tool exists or not
 __luaver_exists()
 {
-    local which_lua=$(which lua)
-    local which_luajit=$(which luajit)
-    local which_luarocks=$(which luarocks)
+    local lua_path=$(command -v lua)
+    local luajit_path=$(command -v luajit)
+    local luarocks_path=$(command -v luarocks)
 
     if [ "$1" = "lua" ]
     then
-        if [ "${which_lua#$__luaver_LUA_DIR}" != "${which_lua}" ]
+        if [ "${lua_path#$__luaver_LUA_DIR}" != "${lua_path}" ]
         then
             return 0
         else
@@ -132,7 +132,7 @@ __luaver_exists()
     fi
     if [ "$1" = "luajit" ]
     then
-        if [ "${which_luajit#$__luaver_LUAJIT_DIR}" != "${which_luajit}" ]
+        if [ "${luajit_path#$__luaver_LUAJIT_DIR}" != "${luajit_path}" ]
         then
             return 0
         else
@@ -141,7 +141,7 @@ __luaver_exists()
     fi
     if [ "$1" = "luarocks" ]
     then
-        if [ "${which_luarocks#$__luaver_LUAROCKS_DIR}" != "${which_luarocks}" ]
+        if [ "${luarocks_path#$__luaver_LUAROCKS_DIR}" != "${luarocks_path}" ]
         then
             return 0
         else
@@ -290,7 +290,7 @@ __luaver_get_platform()
 # Returns the current lua version
 __luaver_get_current_lua_version()
 {
-    local version=$(which lua)
+    local version=$(command -v lua)
 
     if __luaver_exists lua
     then
@@ -319,7 +319,7 @@ __luaver_get_current_lua_version_short()
 # Returns the current luajit version
 __luaver_get_current_luajit_version()
 {
-    local version=$(which luajit)
+    local version=$(command -v luajit)
 
     if __luaver_exists "luajit"
     then
@@ -335,7 +335,7 @@ __luaver_get_current_luajit_version()
 # Returns the current luarocks version
 __luaver_get_current_luarocks_version()
 {
-    local version=$(which luarocks)
+    local version=$(command -v luarocks)
 
     if __luaver_exists "luarocks"
     then
@@ -352,7 +352,7 @@ __luaver_get_current_luarocks_version()
 # Returns the short lua version being supported by present luarocks
 __luaver_get_lua_version_by_current_luarocks()
 {
-    local version=$(which luarocks)
+    local version=$(command -v luarocks)
 
     if __luaver_exists "luarocks"
     then
