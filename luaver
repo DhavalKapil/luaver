@@ -260,29 +260,28 @@ __luaver_get_platform()
 {
     local platforms
     local platform_str=$(uname | tr "[:upper:]" "[:lower:]")
-    platforms=("aix" "bsd" "c89" "freebsd" "generic" "linux" "macosx" "mingw" "posix" "solaris")
+    platforms="aix,bsd,c89,freebsd,generic,linux,macosx,mingw,posix,solaris"
 
     echo "Detecting platform" 1>&2
 
     if [[ "${platform_str}" =~ "darwin" ]]
     then
         echo "Platform detected: macosx" 1>&2
-        echo macosx
+        echo "macosx"
         return
     fi
-    for platform in "${platforms[@]}"
-    do
-        if [[ "${platform_str}" =~ "${platform}" ]]
-        then
-            echo "Platform detected: ${platform}" 1>&2
-            echo "$platform"
-            return
-        fi
-    done
+
+    # Checking for substring
+    if test "${platforms#*$platform_str}" != "$platforms"
+    then
+        echo "Platform detected: ${platform_str}" 1>&2
+        echo "$platform_str"
+        return
+    fi
 
     # Default platform
     echo "Unable to detect platform. Using default 'linux'" 1>&2
-    echo linux
+    echo "linux"
 }
 
 # Returns the current lua version
