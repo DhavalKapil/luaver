@@ -117,9 +117,13 @@ __luaver_init()
 # Checking whether a particular tool exists or not
 __luaver_exists()
 {
+    local which_lua=$(which lua)
+    local which_luajit=$(which luajit)
+    local which_luarocks=$(which luarocks)
+
     if [ "$1" = "lua" ]
     then
-        if [[ $(which lua) = ${__luaver_LUA_DIR}* ]]
+        if [ "${which_lua#$__luaver_LUA_DIR}" != "${which_lua}" ]
         then
             return 0
         else
@@ -128,7 +132,7 @@ __luaver_exists()
     fi
     if [ "$1" = "luajit" ]
     then
-        if [[ $(which luajit) = ${__luaver_LUAJIT_DIR}* ]]
+        if [ "${which_luajit#$__luaver_LUAJIT_DIR}" != "${which_luajit}" ]
         then
             return 0
         else
@@ -137,7 +141,7 @@ __luaver_exists()
     fi
     if [ "$1" = "luarocks" ]
     then
-        if [[ $(which luarocks) = ${__luaver_LUAROCKS_DIR}* ]]
+        if [ "${which_luarocks#$__luaver_LUAROCKS_DIR}" != "${which_luarocks}" ]
         then
             return 0
         else
@@ -263,7 +267,7 @@ __luaver_get_platform()
 
     echo "Detecting platform" 1>&2
 
-    if [[ "${platform_str}" =~ "darwin" ]]
+    if [ "${platform_str}" = "darwin" ]
     then
         echo "Platform detected: macosx" 1>&2
         echo "macosx"
