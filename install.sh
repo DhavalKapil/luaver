@@ -15,7 +15,7 @@ present_dir=$(pwd)
 print()
 {
     tput bold
-    printf "==>  $1\n"
+    printf "==>  %s\n" "${1}"
     tput sgr0
 }
 
@@ -24,25 +24,25 @@ init()
 {
     print "Setting up directory structure..."
     
-    if [ ! -e $LUAVER_DIR ]
+    if [ ! -e "${LUAVER_DIR}" ]
     then
-        mkdir $LUAVER_DIR
+        mkdir "${LUAVER_DIR}"
     fi
-    if [ ! -e $SRC_DIR ]
+    if [ ! -e "${SRC_DIR}" ]
     then
-        mkdir $SRC_DIR
+        mkdir "${SRC_DIR}"
     fi
-    if [ ! -e $LUA_DIR ]
+    if [ ! -e "${LUA_DIR}" ]
     then
-        mkdir $LUA_DIR
+        mkdir "${LUA_DIR}"
     fi
-    if [ ! -e $LUAJIT_DIR ]
+    if [ ! -e "${LUAJIT_DIR}" ]
     then
-        mkdir $LUAJIT_DIR
+        mkdir "${LUAJIT_DIR}"
     fi
-    if [ ! -e $LUAROCKS_DIR ]
+    if [ ! -e "${LUAROCKS_DIR}" ]
     then
-        mkdir $LUAROCKS_DIR
+        mkdir "${LUAROCKS_DIR}"
     fi
     print "Directory structure built..."
 }
@@ -51,29 +51,32 @@ init()
 install()
 {
     print "Downloading '${PROGRAM}'..."
-    cd $LUAVER_DIR
-    if [ -e $PROGRAM ]
+    cd "${LUAVER_DIR}" || exit
+    if [ -e "${PROGRAM}" ]
     then
         print "Existing '${PROGRAM}' detected. Removing it..."
-        rm $PROGRAM
+        rm "${PROGRAM}"
         print "Downloading fresh '${PROGRAM}'"
     fi
+    # This variable is initialized in travis.yml
+    # shellcheck disable=SC2154
     if [ "${__luaver_env}" = "testing" ]
     then
-        cd $present_dir
+        cd "${present_dir}" || exit
         cp "./${PROGRAM}" "${LUAVER_DIR}/"
-        cd $LUAVER_DIR
+        cd "${LUAVER_DIR}" || exit
     else
-        wget $SRC_URL
+        wget "${SRC_URL}"
     fi
-    chmod 775 $PROGRAM
+    chmod 775 "${PROGRAM}"
 }
 
 # Inserts path variables inside bash rc
 set_up_path()
 {
     local str="[ -s ${LUAVER_DIR}/${PROGRAM} ] && . ${LUAVER_DIR}/${PROGRAM}"
-    local shell_type="$(basename $SHELL)"
+    local shell_type
+    shell_type=$(basename "${SHELL}")
     print "Detected SHELL_TYPE: ${shell_type}"
     
     local profile=""
@@ -101,12 +104,13 @@ set_up_path()
         if ! command grep -qc "${str}" "${profile}"
         then
             print "Appending '${str}' at the end of ${profile}"
-            printf "\n${str}\n" >> $profile
+            printf "\n%s\n" "${str}" >> "${profile}"
         fi
-        source $profile
+        # shellcheck source=/dev/null
+        source "${profile}"
     fi
     pwd
-    cd $present_dir
+    cd "${present_dir}" || exit
     pwd
 }
 
