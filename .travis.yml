@@ -23,7 +23,8 @@ install:
   - . ./install.sh
 
 script:
-  - if [[ -n $SHELLCHECK ]]; then shellcheck -s bash luaver && shellcheck -s dash && shellcheck -s ksh && shellcheck -s sh; fi
+  - if [[ -n $SHELLCHECK ]]; then shellcheck -s bash luaver && shellcheck -s dash luaver && shellcheck -s ksh luaver && shellcheck -s sh luaver; fi
+  - if [[ -n $SHELLCHECK ]]; then shellcheck -s bash install.sh && shellcheck -s dash install.sh && shellcheck -s ksh install.sh && shellcheck -s sh install.sh; fi
   - if [[ -z $SHELLCHECK ]] && [[ $SHELL == bash ]]; then ./bats/bin/bats tests; fi
   - if [[ -z $SHELLCHECK ]]; then $SHELL ./tests/integration\ tests/test.sh; fi
 
