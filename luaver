@@ -512,7 +512,7 @@ __luaver_uninstall_lua()
 
 __luaver_list_lua()
 {
-    __luaver_print "Installed versions: (currently $(__luaver_get_current_lua_version))"
+    __luaver_print "Installed versions: (currently $(__luaver_get_current_lua_version || echo none))"
     'ls' -1 "${__luaver_LUA_DIR}/"
 }
 
@@ -606,7 +606,7 @@ __luaver_uninstall_luajit()
 
 __luaver_list_luajit()
 {
-    __luaver_print "Installed versions: (currently $(__luaver_get_current_luajit_version))"
+    __luaver_print "Installed versions: (currently $(__luaver_get_current_luajit_version || echo none))"
     'ls' -1 "${__luaver_LUAJIT_DIR}/"
 }
 
@@ -730,7 +730,7 @@ __luaver_uninstall_luarocks()
 
 __luaver_list_luarocks()
 {
-    __luaver_print "Installed versions: (currently $(__luaver_get_current_luarocks_version) in lua $(__luaver_get_lua_version_by_current_luarocks))"
+    __luaver_print "Installed versions: (currently $(__luaver_get_current_luarocks_version || echo none) in lua $(__luaver_get_lua_version_by_current_luarocks || echo none))"
     'ls' "${__luaver_LUAROCKS_DIR}/" | 'awk' -v FS=_ '{ print "luarocks-" $1 " (lua version: " $2 ")" }'
 }
 
