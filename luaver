@@ -290,12 +290,10 @@ __luaver_get_current_lua_version()
     if __luaver_exists lua
     then
         version=${version#$__luaver_LUA_DIR/}
-        version=${version%/bin/lua}
+        echo "${version%/bin/lua}"
     else
-        version=""
+        return 1
     fi
-    
-    echo "${version}"
 }
 
 # Returns the current lua version (only the first two numbers)
@@ -320,12 +318,10 @@ __luaver_get_current_luajit_version()
     if __luaver_exists "luajit"
     then
         version=${version#$__luaver_LUAJIT_DIR/}
-        version=${version%/bin/luajit}
+        echo "${version%/bin/luajit}"
     else
-        version=""
+        return 1
     fi
-
-    echo "${version}"
 }
 
 # Returns the current luarocks version
@@ -338,12 +334,10 @@ __luaver_get_current_luarocks_version()
     then
         version=${version#$__luaver_LUAROCKS_DIR/}
         version=${version%/bin/luarocks}
-        version=${version%_*}
+        echo "${version%_*}"
     else
-        version=""
+        return 1
     fi
-
-    echo "${version}"
 }
 
 # Returns the short lua version being supported by present luarocks
@@ -356,12 +350,10 @@ __luaver_get_lua_version_by_current_luarocks()
     then
         version=${version#$__luaver_LUAROCKS_DIR/}
         version=${version%/bin/luarocks}
-        version=${version#*_}
+        echo "${version#*_}"
     else
-        version=""
+        return 1
     fi
-
-    echo "${version}"
 }
 
 # End of Helper functions
