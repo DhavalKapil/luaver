@@ -520,17 +520,8 @@ __luaver_uninstall_lua()
 
 __luaver_list_lua()
 {
-    if ! [ "$(ls -A "${__luaver_LUA_DIR}/")" ]
-    then
-        __luaver_print "No version of lua is installed"
-        return 1
-    fi
-
-    __luaver_print "Installed versions: "
-    'ls' "${__luaver_LUA_DIR}/" | 'awk' -v current_version="$(__luaver_get_current_lua_version)" '{
-        if ($0 == current_version) { arrow = " <--" } else { arrow = "" }
-        print "lua-" $0 arrow
-    }'
+    __luaver_print "Installed versions: (currently $(__luaver_get_current_lua_version))"
+    'ls' -1 "${__luaver_LUA_DIR}/"
 }
 
 __luaver_install_luajit()
@@ -623,17 +614,8 @@ __luaver_uninstall_luajit()
 
 __luaver_list_luajit()
 {
-    if ! [ "$(ls -A "${__luaver_LUAJIT_DIR}/")" ]
-    then
-        __luaver_print "No version of LuaJIT is installed"
-        return 1
-    fi
-
-    __luaver_print "Installed versions: "
-    'ls' "${__luaver_LUAJIT_DIR}/" | 'awk' -v current_version="$(__luaver_get_current_luajit_version)" '{
-        if ($0 == current_version) { arrow = " <--" } else { arrow = "" }
-        print "LuaJIT-" $0 arrow
-    }'
+    __luaver_print "Installed versions: (currently $(__luaver_get_current_luajit_version))"
+    'ls' -1 "${__luaver_LUAJIT_DIR}/"
 }
 
 __luaver_install_luarocks()
@@ -756,17 +738,8 @@ __luaver_uninstall_luarocks()
 
 __luaver_list_luarocks()
 {
-    if ! [ "$(ls -A "${__luaver_LUAROCKS_DIR}/")" ]
-    then
-        __luaver_print "No version of luarocks is installed"
-        return 1
-    fi
-
-    __luaver_print "Installed versions: "
-    'ls' "${__luaver_LUAROCKS_DIR}/" | 'awk' -v current_luarocks_version="$(__luaver_get_current_luarocks_version)" -v current_lua_version="$(__luaver_get_lua_version_by_current_luarocks)" -v FS=_ '{
-        if ($1 == current_luarocks_version && $2 == current_lua_version) { arrow = " <--" } else { arrow = "" }
-        print "luarocks-" $1 " (lua version: " $2 ")" arrow
-    }'
+    __luaver_print "Installed versions: (currently $(__luaver_get_current_luarocks_version) in lua $(__luaver_get_lua_version_by_current_luarocks))"
+    'ls' "${__luaver_LUAROCKS_DIR}/" | 'awk' -v FS=_ '{ print "luarocks-" $1 " (lua version: " $2 ")" }'
 }
 
 __luaver_current()
