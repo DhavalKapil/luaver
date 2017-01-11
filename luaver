@@ -520,9 +520,6 @@ __luaver_uninstall_lua()
 
 __luaver_list_lua()
 {
-    local current_version
-    current_version=$(__luaver_get_current_lua_version)
-
     if ! [ "$(ls -A "${__luaver_LUA_DIR}/")" ]
     then
         __luaver_print "No version of lua is installed"
@@ -530,17 +527,10 @@ __luaver_list_lua()
     fi
 
     __luaver_print "Installed versions: "
-    # Versions would not have spaces or globs in between
-    # shellcheck disable=SC2045
-    for version in $(ls "${__luaver_LUA_DIR}/")
-    do
-        if [ "${version}" = "${current_version}" ]
-        then
-            __luaver_print "lua-${version} <--"
-        else
-            __luaver_print "lua-${version}"
-        fi
-    done
+    'ls' "${__luaver_LUA_DIR}/" | 'awk' -v current_version="$(__luaver_get_current_lua_version)" '{
+        if ($0 == current_version) { arrow = " <--" } else { arrow = "" }
+        print "lua-" $0 arrow
+    }'
 }
 
 __luaver_install_luajit()
@@ -633,9 +623,6 @@ __luaver_uninstall_luajit()
 
 __luaver_list_luajit()
 {
-    local current_version
-    current_version=$(__luaver_get_current_luajit_version)
-
     if ! [ "$(ls -A "${__luaver_LUAJIT_DIR}/")" ]
     then
         __luaver_print "No version of LuaJIT is installed"
@@ -643,17 +630,10 @@ __luaver_list_luajit()
     fi
 
     __luaver_print "Installed versions: "
-    # Versions would not have spaces or globs in between
-    # shellcheck disable=SC2045
-    for version in $(ls "${__luaver_LUAJIT_DIR}/")
-    do
-        if [ "${version}" = "${current_version}" ]
-        then
-            __luaver_print "LuaJIT-${version} <--"
-        else
-            __luaver_print "LuaJIT-${version}"
-        fi
-    done
+    'ls' "${__luaver_LUAJIT_DIR}/" | 'awk' -v current_version="$(__luaver_get_current_luajit_version)" '{
+        if ($0 == current_version) { arrow = " <--" } else { arrow = "" }
+        print "LuaJIT-" $0 arrow
+    }'
 }
 
 __luaver_install_luarocks()
@@ -776,11 +756,6 @@ __luaver_uninstall_luarocks()
 
 __luaver_list_luarocks()
 {
-    local current_luarocks_version
-    local current_lua_version
-    current_luarocks_version=$(__luaver_get_current_luarocks_version)
-    current_lua_version=$(__luaver_get_lua_version_by_current_luarocks)
-
     if ! [ "$(ls -A "${__luaver_LUAROCKS_DIR}/")" ]
     then
         __luaver_print "No version of luarocks is installed"
@@ -788,20 +763,10 @@ __luaver_list_luarocks()
     fi
 
     __luaver_print "Installed versions: "
-    # Versions would not have spaces or globs in between
-    # shellcheck disable=SC2045
-    for version in $(ls "${__luaver_LUAROCKS_DIR}/")
-    do
-        luarocks_version=${version%_*}
-        lua_version=${version#*_}
-
-        if [ "${luarocks_version}" = "${current_luarocks_version}" ] && [ "${lua_version}" = "${current_lua_version}" ]
-        then
-            __luaver_print "luarocks-${luarocks_version} (lua version: ${lua_version}) <--"
-        else
-            __luaver_print "luarocks-${luarocks_version} (lua version: ${lua_version})"
-        fi
-    done
+    'ls' "${__luaver_LUAROCKS_DIR}/" | 'awk' -v current_luarocks_version="$(__luaver_get_current_luarocks_version)" -v current_lua_version="$(__luaver_get_lua_version_by_current_luarocks)" -v FS=_ '{
+        if ($1 == current_luarocks_version && $2 == current_lua_version) { arrow = " <--" } else { arrow = "" }
+        print "luarocks-" $1 " (lua version: " $2 ")" arrow
+    }'
 }
 
 __luaver_current()
