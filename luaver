@@ -513,7 +513,7 @@ __luaver_uninstall_lua()
 __luaver_list_lua()
 {
     __luaver_print "Installed versions: (currently $(__luaver_get_current_lua_version || echo none))"
-    'ls' -1 "${__luaver_LUA_DIR}/"
+    'find' "${__luaver_LUA_DIR}"/* -prune | 'awk' -F/ '{ print $NF }'
 }
 
 __luaver_install_luajit()
@@ -607,7 +607,7 @@ __luaver_uninstall_luajit()
 __luaver_list_luajit()
 {
     __luaver_print "Installed versions: (currently $(__luaver_get_current_luajit_version || echo none))"
-    'ls' -1 "${__luaver_LUAJIT_DIR}/"
+    'find' "${__luaver_LUAJIT_DIR}"/* -prune | 'awk' -F/ '{ print $NF }'
 }
 
 __luaver_install_luarocks()
@@ -731,9 +731,7 @@ __luaver_uninstall_luarocks()
 __luaver_list_luarocks()
 {
     __luaver_print "Installed versions: (currently $(__luaver_get_current_luarocks_version || echo none) in lua $(__luaver_get_lua_version_by_current_luarocks || echo none))"
-    # The result can be broken if a non-numeric directory exists in LUAROCKS_DIR
-    # shellcheck disable=SC2012
-    'ls' "${__luaver_LUAROCKS_DIR}/" | 'awk' -v FS=_ '{ print "luarocks-" $1 " (lua version: " $2 ")" }'
+    'find' "${__luaver_LUAROCKS_DIR}/"* -prune | 'awk' -F/ '{ print $NF }' | 'awk' -F_ '{ print $1 "\tlua:" $2}'
 }
 
 __luaver_current()
