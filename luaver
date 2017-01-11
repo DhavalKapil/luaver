@@ -731,6 +731,8 @@ __luaver_uninstall_luarocks()
 __luaver_list_luarocks()
 {
     __luaver_print "Installed versions: (currently $(__luaver_get_current_luarocks_version || echo none) in lua $(__luaver_get_lua_version_by_current_luarocks || echo none))"
+    # The result can be broken if a non-numeric directory exists in LUAROCKS_DIR
+    # shellcheck disable=SC2012
     'ls' "${__luaver_LUAROCKS_DIR}/" | 'awk' -v FS=_ '{ print "luarocks-" $1 " (lua version: " $2 ")" }'
 }
 
