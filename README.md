@@ -41,20 +41,35 @@ curl https://raw.githubusercontent.com/dhavalkapil/luaver/v1.0.0/install.sh -o i
 
 _Note: It will overwrite any `install.sh` in your current directory. Also, this file is no longer needed after the installation is complete._
 
-### Installation from Git Repository
+### Install using `git`
 
-First clone `luaver` on your local machine using git:
+1. Clone this repository into `~/.luaver`:
 
-```sh
-git clone https://github.com/DhavalKapil/luaver
+    ```sh
+    $ git clone https://github.com/DhavalKapil/luaver.git ~/.luaver
+    ```
+
+2. Add `. ~/.luaver/luaver` to your `.bashrc` or equivalent:
+
+    ```sh
+    $ echo ". ~/.luaver/luaver" >> ~/.bashrc
+    ```
+
+3. Reload `.bashrc` or restart the shell to load `luaver`:
+
+   ```sh
+   $ . ~/.bashrc
+   ```
+
+### Update using `git`
+
+_Note: This method only works if luaver was installed using `git`._
+
+```
+$ cd ~/.luaver && git fetch origin && git reset --hard origin/master
 ```
 
-Then, run the installation script:
-
-```sh
-cd luaver
-. ./install.sh
-```
+Additional works may be required.
 
 ## Usage
 
