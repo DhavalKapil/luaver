@@ -1,3 +1,4 @@
+#!/bin/sh
 # Lua Version Manager
 # Managing and switching between different versions of Lua, LuaJIT and Luarocks made easy
 #
@@ -856,3 +857,5 @@ luaver()
 
     __luaver_exec_command "cd ${__luaver_present_dir}"
 }
+
+[ -n "$1" ] && luaver "$@"
