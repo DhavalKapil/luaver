@@ -537,6 +537,13 @@ __luaver_install_luajit()
     __luaver_exec_command make PREFIX="${__luaver_LUAJIT_DIR}/${version}"
     __luaver_exec_command make install PREFIX="${__luaver_LUAJIT_DIR}/${version}"
 
+    # Beta versions do not produce /bin/luajit. Making symlink in such cases.
+    __luaver_exec_command cd "${__luaver_LUAJIT_DIR}/${version}/bin"
+    if [ ! -f "luajit" ]
+    then
+        __luaver_exec_command ln -sf "luajit-${version}" "${__luaver_LUAJIT_DIR}/${version}/bin/luajit"
+    fi
+
     __luaver_print "${luajit_dir_name} successfully installed. Do you want to switch to this version? [Y/n]: "
     read -r choice
     case $choice in
@@ -562,7 +569,7 @@ __luaver_use_luajit()
         read -r choice
         case $choice in
             [yY][eE][sS] | [yY] )
-                __luaver_install_lua "${version}"
+                __luaver_install_luajit "${version}"
                 ;;
             * )
                 __luaver_error "Unable to use ${luajit_name}"
