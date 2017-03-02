@@ -109,9 +109,8 @@ set_up_path()
         # shellcheck source=/dev/null
         source "${profile}"
     fi
-    pwd
-    cd "${present_dir}" || exit
-    pwd
+    # shellcheck disable=SC2164
+    cd "${present_dir}"
 }
 
 print "Installing '${PROGRAM}'..."
