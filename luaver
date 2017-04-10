@@ -529,7 +529,9 @@ __luaver_list_lua()
     if [ "x$1" = "x-r" ]
     then
         __luaver_get_url "https://www.lua.org/ftp/" |
-        'awk' 'match($0, /lua-5\.[0-9]+(\.[0-9]+)?/) { print substr($0, RSTART + 4, RLENGTH - 4) }'
+        'awk' 'match($0, /lua-5\.[0-9]+(\.[0-9]+)?/) { print substr($0, RSTART + 4, RLENGTH - 4) }' |
+        # Sort semver
+        'sort' -t . -k 1,1n -k 2,2n -k 3,3n
     else
         __luaver_print "Installed versions: (currently $(__luaver_get_current_lua_version || echo none))"
         'find' "${__luaver_LUA_DIR}" -name '*.*' -prune | 'awk' -F/ '{ print $NF }'
@@ -638,7 +640,11 @@ __luaver_list_luajit()
         __luaver_get_url "http://luajit.org/download.html" |
         'awk' '/MD5 Checksums/,/<\/pre/ { print }' |
         'awk' '/LuaJIT.*gz/ { print $2 }' |
-        'sed' -e s/LuaJIT-// -e s/\.tar\.gz//
+        'sed' -e s/LuaJIT-// -e s/\.tar\.gz// |
+        # Sort semver with 'beta'
+        'sed' -e s/-beta/.beta./ |
+        'sort' -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4r -k 5,5n -r |
+        'sed' -e s/.beta./-beta/
     else
         __luaver_print "Installed versions: (currently $(__luaver_get_current_luajit_version || echo none))"
         'find' "${__luaver_LUAJIT_DIR}" -name '*.*' -prune | 'awk' -F/ '{ print $NF }'
@@ -768,7 +774,9 @@ __luaver_list_luarocks()
     if [ "x$1" = "x-r" ]
     then
         __luaver_get_url "http://luarocks.github.io/luarocks/releases/releases.json" |
-        'awk' 'match($0, /"[0-9]+\.[0-9]\.[0-9]"/) { print substr($0, RSTART + 1, RLENGTH - 2) } '
+        'awk' 'match($0, /"[0-9]+\.[0-9]\.[0-9]"/) { print substr($0, RSTART + 1, RLENGTH - 2) } ' |
+        # Sort semver
+        'sort' -t . -k 1,1n -k 2,2n -k 3,3n
     else
         __luaver_print "Installed versions: (currently $(__luaver_get_current_luarocks_version || echo none) in lua $(__luaver_get_lua_version_by_current_luarocks || echo none))"
         'find' "${__luaver_LUAROCKS_DIR}" -name '*.*' -prune | 'awk' -F/ '{ print $NF }' | 'awk' -F_ '{ print $1 "\tlua:" $2}'
