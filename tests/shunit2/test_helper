@@ -1,0 +1,29 @@
+#!/bin/sh
+# shellcheck disable=SC2039
+
+setup_luaver()
+{
+    : "${LUAVER_DIR="$SHUNIT_TMPDIR/][+*^"}"
+    rm -rf "$LUAVER_DIR/rockset"
+}
+
+install_lua()
+{
+    lua_version=${1:?}
+
+    set -e
+
+    command -v lua || export PATH="$LUAVER_DIR/lua/$lua_version/bin:$PATH"
+    [ -f "$LUAVER_DIR/lua/$lua_version/bin/lua" ] && return
+
+    (
+        command mkdir -p "$LUAVER_DIR/src"
+        'cd' "$LUAVER_DIR/src"
+        command curl -fsSL https://www.lua.org/ftp/lua-$lua_version.tar.gz | 'command' tar -xz
+
+        'cd' "lua-$lua_version"
+        command make posix install INSTALL_TOP="$LUAVER_DIR/lua/$lua_version" >/dev/null
+    )
+
+    set +e
+}

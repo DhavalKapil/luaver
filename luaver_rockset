@@ -1,0 +1,291 @@
+#!/bin/sh
+# shellcheck disable=SC2039
+
+: "${LUAVER_DIR=$HOME/.luaver}"
+
+# -2:silent -1:error 0:info 1:debug
+: ${LUAVER_VERBOSE="0"}
+
+## Logging helpers
+
+__luaver_rockset__error()
+{
+    [ "${LUAVER_VERBOSE-0}" -ge -1 ] && 'echo' "$1" >&2
+    return 1
+}
+
+__luaver_rockset__info()
+{
+    [ "${LUAVER_VERBOSE-0}" -ge 0 ] && 'echo' "$1" >&2
+}
+
+## PATH manipulating helpers
+
+# luaver_rockset__cleaned_path PATH
+# Removes previous rockset from PATH.
+__luaver_rockset__cleaned_path()
+(
+    IFS=:
+    for p in ${1:?}
+    do
+        case $p in
+            "${LUAVER_DIR:?}"/rockset/*/*/bin ) ;;
+            "${LUAVER_DIR:?}"/rockset/*/bin ) continue ;;
+        esac
+        'printf' %s: "$p"
+    done | command sed 's/:$//'
+)
+
+# luaver_rockset__current_prefix PATH
+# Prints the prefix of current rockset.
+__luaver_rockset__current_prefix()
+(
+    IFS=:
+    for p in ${1:?}
+    do
+        case $p in
+            "${LUAVER_DIR:?}"/rockset/*/*/bin ) ;;
+            "${LUAVER_DIR:?}"/rockset/*/bin ) 'echo' "${p%/bin}"; return ;;
+        esac
+    done
+    return 1
+)
+
+## Installing helpers
+
+# luaver_rockset__download URL
+# Download tarball from the given URL
+__luaver_rockset__download()
+(
+    local url="${1:?}"
+
+    local archive_path
+    archive_path="$LUAVER_DIR/src/$(command basename "$url")" || return
+
+    command mkdir -p "$LUAVER_DIR/src" || return
+
+    [ "${LUAVER_VERBOSE-0}" -le 0 ] && exec 2>/dev/null
+
+    if command -v curl >/dev/null 2>&1
+    then
+        command curl -L "$1"
+    else
+        command wget -O - "$1"
+    fi >"$archive_path" || {
+        command rm "$archive_path"
+        return 1
+    }
+)
+
+# luaver_rockset__extract ARCHIVE_NAME
+# Extracts tarball at the given path.
+__luaver_rockset__extract()
+(
+    local archive_name="${1:?}"
+
+    'cd' "$LUAVER_DIR/src" || return
+
+    if ! command tar -xzf "$archive_name"
+    then
+        command rm -r "$archive_name"
+        return 1
+    fi
+)
+
+# luaver_rockset__luarocks_compile DIR_NAME PREFIX
+# Extracts tarball at the given URL to the given directory.
+__luaver_rockset__luarocks_compile()
+(
+    local dir_name="${1:?}"
+    local prefix="${2:?}"
+
+    [ "${LUAVER_VERBOSE-0}" -le 0 ] && exec >/dev/null
+
+    'cd' "$LUAVER_DIR/src/$dir_name" &&
+    ./configure --prefix="$prefix" --versioned-rocks-dir &&
+    'command' make build &&
+    'command' make install
+)
+
+## Other helpers
+
+# luaver_rockset__current_name
+# Prints the current version of Lua.
+__luaver_rockset__lua_version()
+{
+    local lua_path
+    lua_path="$(command -v lua)" || return
+    case "$lua_path" in
+        "${LUAVER_DIR:?}"/lua/*/bin/lua )
+            lua_path="${lua_path#"${LUAVER_DIR:?}"/lua/}"
+            echo "${lua_path%%/*}"
+            return
+            ;;
+        /* )
+            echo system
+            return
+            ;;
+    esac
+    return 1
+}
+
+## Command functions
+
+# __luaver_rockset_create ROCKSET_NAME LUA_VERSION LUAROCKS_VERSION
+# Creates a new rockset with the given name.
+__luaver_rockset_create()
+{
+    local rockset_name="${1:?}"
+    local lua_version="${2:?}"
+    local rockset_id="${rockset_name}_$lua_version"
+    local rockset_prefix="$LUAVER_DIR/rockset/$rockset_id"
+
+    if [ -z "$3" ]
+    then
+        __luaver_rockset__error "LUAROCKS_VERSION is missing!"
+        return
+    fi
+    local luarocks_version="$3"
+
+    if [ -d "$rockset_prefix/bin" ]
+    then
+        __luaver_rockset__error "Rockset $rockset_id already exists!"
+    else
+        local luarocks_dir_name="luarocks-$luarocks_version"
+        local archive_name="$luarocks_dir_name.tar.gz"
+        local url="http://luarocks.org/releases/$archive_name"
+
+        __luaver_rockset__info "Downloading $url..."
+        if ! __luaver_rockset__download "$url"
+        then
+            __luaver_rockset__error "Failed to download $url!"
+            return
+        fi
+
+        __luaver_rockset__info "Extracting $archive_name..."
+        if ! __luaver_rockset__extract "$archive_name"
+        then
+            __luaver_rockset__error "Failed to extract $archive_name!"
+            return
+        fi
+
+        __luaver_rockset__info "Compiling $luarocks_dir_name into $rockset_prefix..."
+        if ! __luaver_rockset__luarocks_compile "$luarocks_dir_name" "$rockset_prefix"
+        then
+            __luaver_rockset__error "Failed to compile Luarocks!"
+            return
+        fi
+
+        __luaver_rockset__info "Luarocks $luarocks_version was successfully installed into rockset $(__luaver_rockset_current)."
+    fi
+
+    __luaver_rockset_use "$1" "$2"
+}
+
+# __luaver_rockset_use ROCKSET_NAME LUA_VERSION
+# Prepend the given rockset to PATH.
+__luaver_rockset_use()
+{
+    local rockset_id="$1_$2"
+    local prefix="$LUAVER_DIR/rockset/${rockset_id}"
+
+    if ! [ -d "$prefix/bin" ]
+    then
+        __luaver_rockset__error "Rockset $rockset_id does not exists!"
+        return
+    fi
+
+    export PATH
+    PATH="$prefix/bin:$(__luaver_rockset__cleaned_path "$PATH")" || return
+
+    eval "$(luarocks path)"
+
+    __luaver_rockset__info "Using rockset $rockset_id."
+}
+
+# __luaver_rockset_delete ROCKSET_NAME LUA_VERSION
+# Deletes the given rockset.
+__luaver_rockset_delete()
+{
+    local rockset_name="$1"
+    local lua_version="$2"
+    local rockset_id="${rockset_name}_$lua_version"
+    local rockset_prefix="$LUAVER_DIR/rockset/$rockset_id"
+
+    if [ ! -d "$rockset_prefix/bin" ]
+    then
+        __luaver_rockset__error "Rockset $rockset_id does not exists!"
+        return
+    fi
+
+    command rm -r "$rockset_prefix" &&
+    __luaver_rockset__info "Rockset $rockset_id was successfully deleted."
+}
+
+# __luaver_rockset_current
+# Prints the current rockset.
+__luaver_rockset_current()
+{
+    local prefix
+    if prefix="$(__luaver_rockset__current_prefix "$PATH")"
+    then
+        command basename "$prefix"
+    else
+        __luaver_rockset__error "No current rockset was found!"
+    fi
+}
+
+# __luaver_rockset_list
+# Prints all rocksets.
+__luaver_rockset_list()
+{
+    local current
+    if current="$(luaver_rockset current)"
+    then
+        __luaver_rockset__info "Current rockset is $current."
+    fi
+
+    local prefix
+    for prefix in "$LUAVER_DIR/rockset"/*
+    do
+        basename "${prefix}"
+    done | command grep -v '\*'
+}
+
+luaver_rockset()
+{
+    local cmd="$1"
+    shift
+    case "$cmd" in
+        create | use | delete )
+            local rockset_name="$1"
+            if [ -n "$rockset_name" ]
+            then
+                shift
+            else
+                __luaver_rockset__error "ROCKSET_NAME is missing!"
+                return
+            fi
+
+            local lua_version
+            if ! lua_version=$(__luaver_rockset__lua_version)
+            then
+                __luaver_rockset__error "Lua was not found on PATH!"
+                return
+            fi
+            
+            "__luaver_rockset_$cmd" "$rockset_name" "$lua_version" "$@"
+            ;;
+        current | list ) "__luaver_rockset_$cmd" "$@" ;;
+        help | * )
+            'echo' \
+"Usage: luaver rockset COMMAND [OPTIONS]
+  create NAME LUAROCKS_VERSION
+  use NAME
+  delete NAME
+  current
+  list"
+            return 1
+            ;;
+    esac
+}

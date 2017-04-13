@@ -27,6 +27,7 @@ script:
   - if [[ -n $SHELLCHECK ]]; then shellcheck -s bash install.sh && shellcheck -s dash install.sh && shellcheck -s ksh install.sh && shellcheck -s sh -e SC2039 install.sh; fi
   - if [[ -z $SHELLCHECK ]] && [[ $SHELL == bash ]]; then ./bats/bin/bats tests; fi
   - if [[ -z $SHELLCHECK ]]; then $SHELL ./tests/integration\ tests/test.sh; fi
+  - if [[ -z $SHELLCHECK ]]; then ( cd ./tests/shunit2 && $SHELL ./run_tests.sh; ); fi
 
 env:
   global:
