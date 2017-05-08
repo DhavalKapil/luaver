@@ -30,7 +30,7 @@ __luaver_verbose=0
 # Error handling function
 __luaver_error()
 {
-    printf "%s\n" "${1}" 1>&2
+    printf "%b\n" "${1}" 1>&2
     __luaver_exec_command cd "${__luaver_present_dir}"
     kill -INT $$
 }
@@ -41,7 +41,7 @@ __luaver_print()
     if [ ! $__luaver_verbose = 0 ]
     then
         tput bold
-        printf "==>  %s\n" "${1}"
+        printf "==>  %b\n" "${1}"
         tput sgr0
     fi
 }
@@ -49,7 +49,7 @@ __luaver_print()
 # Printing formatted text
 __luaver_print_formatted()
 {
-    printf "%s\n" "${1}"
+    printf "%b\n" "${1}"
 }
 
 # A wrapper function to execute commands on the terminal and exit on error
