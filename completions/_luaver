@@ -1,0 +1,108 @@
+#compdef luaver
+#autoload
+
+_luaver_download()
+{
+    if curl -V >/dev/null 2>&1
+    then
+        curl -fsSL "$1"
+    else
+        wget -qO- "$1"
+    fi
+}
+
+_luaver_install()
+{
+    local -a lua_versions
+    if _cache_invalid lua_versions || ! _retrieve_cache lua_versions
+    then
+        lua_versions=($(_luaver_download 'https://www.lua.org/ftp/' | sed -n -e 's/.*lua\-\(5\.[0-9]\.[0-9]\)\.tar\.gz.*/\1/gp'))
+
+        _store_cache lua_versions lua_versions
+    fi
+    compadd $lua_versions
+}
+
+_luaver_install-luajit()
+{
+    local -a luajit_versions
+    if _cache_invalid luajit_versions || ! _retrieve_cache lua_versions
+    then
+        luajit_versions=($(_luaver_download "http://luajit.org/download.html" | awk '/MD5 Checksums/,/<\/pre/ { print }' | sed -n -e 's/.*LuaJIT-\(.*\)\.tar\.gz.*/\1/gp'))
+
+        _store_cache luajit_versions lua_versions
+    fi
+    compadd $luajit_versions
+}
+
+_luaver_install-luarocks()
+{
+    local -a luarocks_versions
+    if _cache_invalid luarocks_versions || ! _retrieve_cache lua_versions
+    then
+        luarocks_versions=($(_luaver_download 'http://luarocks.github.io/luarocks/releases/releases.json' | sed -n -e 's/.*luarocks-\(.*\)\.tar\.gz.*/\1/gp'))
+
+        _store_cache luarocks_versions lua_versions
+    fi
+    compadd $luarocks_versions
+}
+
+_luaver()
+{
+    local -a _1st_arguments
+    _1st_arguments=(
+        'install:Install the given lua version'
+        'use:Switch to the given lua version'
+        'set-default:Set the given version as default for lua'
+        'unset-default:Unset the default lua version'
+        'uninstall:Uninstall the given lua version'
+        'list:List installed lua versions'
+        'install-luajit:Install the given luajit version'
+        'use-luajit:Switch to the given luajit version'
+        'set-default-luajit:Set the given version as default for luajit'
+        'unset-default-luajit:Unset the default luajit version'
+        'uninstall-luajit:Uninstall the given luajit version'
+        'list-luajit:List installed luajit versions'
+        'install-luarocks:Install the given luarocks version'
+        'use-luarocks:Switch to the given luarocks version'
+        'set-default-luarocks:Set the given version as default for luarocks'
+        'unset-default-luarocks:Unset the default luarocks version'
+        'uninstall-luarocks:Uninstall the given luarocks version'
+        'list-luarocks:List installed luarocks versions'
+        'current:List present versions being used'
+        'version:Display luaver version'
+        'help:Display help text'
+    );
+
+    local state
+    _arguments '*:: :->command'
+
+    if (( CURRENT == 1 )); then
+        _describe -t commands "luaver command" _1st_arguments
+        return
+    fi
+
+    local -a _command_args
+    case ${words[1]} in
+        install )
+            _luaver_install
+            ;;
+        install-luajit )
+            _luaver_install-luajit
+            ;;
+        install-luarocks )
+            _luaver_install-luarocks
+            ;;
+        use | set-default | uninstall)
+            compadd $(luaver list | grep '[0-9].[0-9].[0-9]' | tr - ' ') # UGLY HACK
+            ;;
+        use-luajit | set-default-luajit | uninstall-luajit )
+            compadd $(luaver list-luajit | grep '[0-9].[0-9].[0-9]' | tr - ' ') # UGLY HACK
+            ;;
+        use-luarocks | set-default-luarocks | uninstall-luarocks)
+            compadd $(luaver list-luarocks | grep '[0-9].[0-9].[0-9]' | tr - ' ') # UGLY HACK
+            ;;
+    esac
+}
+
+_luaver ${@} # Call the completer
