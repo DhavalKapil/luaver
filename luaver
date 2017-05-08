@@ -778,7 +778,10 @@ luaver()
     __luaver_present_dir=$(pwd)
 
     local command="${1}"
-    shift
+    if [ ${#} -gt 0 ]
+    then
+        shift
+    fi
 
     case $command in
         "help" )                    __luaver_usage;;
