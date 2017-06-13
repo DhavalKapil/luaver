@@ -1,10 +1,9 @@
 . ~/.luaver/luaver
 
 echo "Y" > yes
-echo "Y" > yes_yes_no_yes
-echo "Y" >> yes_yes_no_yes
-echo "N" >> yes_yes_no_yes
-echo "Y" >> yes_yes_no_yes
+echo "Y" > yes_yes_yes
+echo "Y" >> yes_yes_yes
+echo "Y" >> yes_yes_yes
 
 # Installing lua 5.3.2
 luaver install 5.3.2 < yes
@@ -70,7 +69,7 @@ then
     exit 1
 fi
 
-luaver install 5.2.4 < yes_yes_no_yes
+luaver install 5.2.4 < yes_yes_yes
 
 # Confirming
 version_string=$(lua -v)
