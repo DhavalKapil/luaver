@@ -36,10 +36,10 @@ sudo apt-get install lib32ncurses5-dev
 You can install from the script directly:
 
 ```sh
-curl https://raw.githubusercontent.com/dhavalkapil/luaver/v1.0.0/install.sh -o install.sh && . ./install.sh
+curl -fsSL https://raw.githubusercontent.com/dhavalkapil/luaver/master/install.sh | sh -- -r v1.0.0
 ```
 
-_Note: It will overwrite any `install.sh` in your current directory. Also, this file is no longer needed after the installation is complete._
+Follow the instructions which appears after the luaver installation.
 
 ### Install using `git`
 
@@ -49,10 +49,11 @@ _Note: It will overwrite any `install.sh` in your current directory. Also, this 
     $ git clone https://github.com/DhavalKapil/luaver.git ~/.luaver
     ```
 
-2. Add `. ~/.luaver/luaver` to your `.bashrc` or equivalent:
+2. Add `. ~/.luaver/luaver` to your profile such as `.bashrc` or `.zshrc`:
 
     ```sh
-    $ echo ". ~/.luaver/luaver" >> ~/.bashrc
+    $ echo "[ -s ~/.luaver/luaver ] && . ~/.luaver/luaver" >> ~/.bashrc
+    $ echo "[ -s ~/.luaver/completions/luaver.bash ] && . ~/.luaver/completions/luaver.bash"" >> ~/.bashrc
     ```
 
 3. Reload `.bashrc` or restart the shell to load `luaver`:

@@ -38,7 +38,7 @@ _luaver_install-luajit()
 _luaver_install-luarocks()
 {
     local -a luarocks_versions
-    if _cache_invalid luarocks_versions || ! _retrieve_cache luajit_versions
+    if _cache_invalid luarocks_versions || ! _retrieve_cache luarocks_versions
     then
         luarocks_versions=($(_luaver_download 'http://luarocks.github.io/luarocks/releases/releases.json' | sed -n -e 's/.*luarocks-\(.*\)\.tar\.gz.*/\1/gp'))
 

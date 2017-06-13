@@ -1,120 +1,88 @@
-PROGRAM="luaver"
-SRC_URL="https://raw.githubusercontent.com/dhavalkapil/luaver/v1.0.0/${PROGRAM}"
+#!/bin/sh
 
-# Directories to be used
-LUAVER_DIR="${HOME}/.luaver"             # The luaver directory
-SRC_DIR="${LUAVER_DIR}/src"              # Where source code is downloaded
-LUA_DIR="${LUAVER_DIR}/lua"              # Where lua source is built
-LUAJIT_DIR="${LUAVER_DIR}/luajit"        # Where luajit source is built
-LUAROCKS_DIR="${LUAVER_DIR}/luarocks"    # Where luarocks source is built
+{ # ensure the whole script is loaded
 
-# Present directory
-present_dir=$(pwd)
+set -eu
 
-# Printing bold text - TODO
-print()
+print_bold()
 {
-    tput bold
-    printf "==>  %s\n" "${1}"
-    tput sgr0
+    tput bold; echo "${1}"; tput sgr0
 }
 
-# Initializes directories
-init()
+download_file()
 {
-    print "Setting up directory structure..."
-    
-    if [ ! -e "${LUAVER_DIR}" ]
-    then
-        mkdir "${LUAVER_DIR}"
+    if 'curl' -V >/dev/null 2>&1
+    then 'curl' -fsSL "${1}"
+    else 'wget' -qO- "${1}"
     fi
-    if [ ! -e "${SRC_DIR}" ]
-    then
-        mkdir "${SRC_DIR}"
-    fi
-    if [ ! -e "${LUA_DIR}" ]
-    then
-        mkdir "${LUA_DIR}"
-    fi
-    if [ ! -e "${LUAJIT_DIR}" ]
-    then
-        mkdir "${LUAJIT_DIR}"
-    fi
-    if [ ! -e "${LUAROCKS_DIR}" ]
-    then
-        mkdir "${LUAROCKS_DIR}"
-    fi
-    print "Directory structure built..."
 }
 
-# Downloads luaver
-install()
+# install_file baseurl file
+install_file()
 {
-    print "Downloading '${PROGRAM}'..."
-    cd "${LUAVER_DIR}" || exit
-    if [ -e "${PROGRAM}" ]
+    if [ -e "${2}" ]
     then
-        print "Existing '${PROGRAM}' detected. Removing it..."
-        rm "${PROGRAM}"
-        print "Downloading fresh '${PROGRAM}'"
-    fi
-    # This variable is initialized in travis.yml
-    # shellcheck disable=SC2154
-    if [ "${__luaver_env}" = "testing" ]
-    then
-        cd "${present_dir}" || exit
-        cp "./${PROGRAM}" "${LUAVER_DIR}/"
-        cd "${LUAVER_DIR}" || exit
+        cp "${2}" "${LUAVER_DIR}/${2}"
     else
-        wget "${SRC_URL}"
+        download_file "${1}/${2}" >"${LUAVER_DIR}/${2}"
     fi
-    chmod 775 "${PROGRAM}"
 }
 
-# Inserts path variables inside bash rc
-set_up_path()
-{
-    local str="[ -s ${LUAVER_DIR}/${PROGRAM} ] && . ${LUAVER_DIR}/${PROGRAM}"
-    local shell_type
-    shell_type=$(basename "${SHELL}")
-    print "Detected SHELL_TYPE: ${shell_type}"
-    
-    local profile=""
-    if [ "${shell_type}" = "bash" ]
-    then
-        if [ -f "$HOME/.bashrc" ]
-        then
-            profile="$HOME/.bashrc"
-        fi
-    elif [ "${shell_type}" = "zsh" ]
-    then
-        if [ -f "$HOME/.zshrc" ]
-        then
-            profile="$HOME/.zshrc"
-        fi
-    fi
-    
-    if [ "${profile}" = "" ]
-    then
-        print "Unable to detect profile(no ~/.bashrc, ~/.zshrc found)"
-        print "Add the following at the end of the correct file yourself:"
-        print "${str}"
-        print "You can start using it in a new terminal or run 'source ~/.bashrc' in present terminal"
-    else
-        if ! command grep -qc "${str}" "${profile}"
-        then
-            print "Appending '${str}' at the end of ${profile}"
-            printf "\n%s\n" "${str}" >> "${profile}"
-        fi
-        # shellcheck source=/dev/null
-        source "${profile}"
-    fi
-    # shellcheck disable=SC2164
-    cd "${present_dir}"
-}
+## Option parsing
+LUAVER_DIR=~/.luaver
+REVISION=v1.0.0
+SHELL_TYPE="$(basename /"${SHELL}")"
 
-print "Installing '${PROGRAM}'..."
-init
-install
-set_up_path
-print "Successfully installed '${PROGRAM}'..."
+while getopts hr:s: OPT
+do
+    case "$OPT" in
+        r ) REVISION="${OPTARG}" ;;
+        h )
+            echo "Usage: ${0} [-r REVISION] [-s SHELL]"
+            echo "  -r  luaver reversion [${REVISION}]"
+            ;;
+    esac
+done
+
+print_bold "Installing luaver..."
+
+## Download script
+URL="https://raw.githubusercontent.com/DhavalKapil/luaver/${REVISION}"
+
+mkdir -p "${LUAVER_DIR}/completions"
+
+install_file "${URL}" "luaver"
+chmod a+x "${LUAVER_DIR}/luaver"
+
+install_file "${URL}" "completions/luaver.bash" || rm "${LUAVER_DIR}/completions/luaver.bash"
+
+## Set up profile
+APPEND_COMMON="[ -s ~/.luaver/luaver ] && . ~/.luaver/luaver"
+
+APPEND_BASH="${APPEND_COMMON}
+[ -s ~/.luaver/completions/luaver.bash ] && . ~/.luaver/completions/luaver.bash"
+
+APPEND_ZSH="${APPEND_COMMON}"
+
+case "${SHELL_TYPE}" in
+    bash ) APPEND="${APPEND_BASH}" ;;
+    zsh ) APPEND="${APPEND_ZSH}" ;;
+    * ) APPEND="${APPEND_COMMON}"
+esac
+
+if [ -f ~/."${SHELL_TYPE}"rc ]
+then
+    'grep' -qF "${APPEND}" ~/."${SHELL_TYPE}"rc || printf "\n%s\n\n" "${APPEND}" >>~/."${SHELL_TYPE}"rc
+
+    print_bold "Appending the following lines at the end of ~/.${SHELL_TYPE}rc if lines not exists:"
+    printf "\n%s\n\n" "${APPEND}"
+    print_bold "To use luaver, you must restart the shell or execute '. ~/.${SHELL_TYPE}rc'"
+else
+    print_bold "Add the following lines at the end of your profile (~/.bashrc, ~/.zshrc, etc):"
+    printf "\n%s\n\n" "${APPEND}"
+    print_bold "To use luaver, you must restart the shell or execute the above lines"
+fi
+
+print_bold "luaver was successfully installed!"
+
+}
