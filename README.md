@@ -53,7 +53,7 @@ Follow the instructions which appears after the luaver installation.
 
     ```sh
     $ echo "[ -s ~/.luaver/luaver ] && . ~/.luaver/luaver" >> ~/.bashrc
-    $ echo "[ -s ~/.luaver/completions/luaver.bash ] && . ~/.luaver/completions/luaver.bash"" >> ~/.bashrc
+    $ echo "[ -s ~/.luaver/completions/luaver.bash ] && . ~/.luaver/completions/luaver.bash" >> ~/.bashrc
     ```
 
 3. Reload `.bashrc` or restart the shell to load `luaver`:
