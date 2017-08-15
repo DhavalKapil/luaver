@@ -38,8 +38,9 @@ do
     case "$OPT" in
         r ) REVISION="${OPTARG}" ;;
         h )
-            echo "Usage: ${0} [-r REVISION] [-s SHELL]"
+            echo "Usage: ${0} [-r REVISION]"
             echo "  -r  luaver reversion [${REVISION}]"
+            exit 0
             ;;
     esac
 done
