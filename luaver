@@ -851,7 +851,14 @@ luaver()
 
         "current" )                 __luaver_current;;
         "version" )                 __luaver_version;;
-        * )                         __luaver_usage;;
+        * )
+            if command -v "luaver_$command"
+            then
+                "luaver_$command" "${@}"
+            else
+                __luaver_usage
+            fi
+            ;;
     esac
 
     __luaver_exec_command cd "${__luaver_present_dir}"
