@@ -30,7 +30,7 @@ install_file()
 
 ## Option parsing
 LUAVER_DIR=~/.luaver
-REVISION=v1.0.0
+REVISION=v1.1.0
 SHELL_TYPE="$(basename /"${SHELL}")"
 
 while getopts hr:s: OPT
