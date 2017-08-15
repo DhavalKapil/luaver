@@ -3,6 +3,7 @@
 # Managing and switching between different versions of Lua, LuaJIT and Luarocks made easy
 #
 # Developed by Dhaval Kapil <me@dhavalkapil.com>
+# With a lot of help from Kaito Udagawa
 #
 # MIT license http://www.opensource.org/licenses/mit-license.php
 
