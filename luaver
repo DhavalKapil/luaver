@@ -5,7 +5,7 @@
 # Developed by Dhaval Kapil <me@dhavalkapil.com>
 # With a lot of help from Kaito Udagawa
 #
-# MIT license http://www.opensource.org/licenses/mit-license.php
+# MIT license https://www.opensource.org/licenses/mit-license.php
 
 __luaver_VERSION="1.1.0"
 
@@ -413,7 +413,7 @@ __luaver_install_lua()
     local version=$1
     local lua_dir_name="lua-${version}"
     local archive_name="${lua_dir_name}.tar.gz"
-    local url="http://www.lua.org/ftp/${archive_name}"
+    local url="https://www.lua.org/ftp/${archive_name}"
 
     __luaver_print "Installing ${lua_dir_name}"
 
@@ -544,7 +544,7 @@ __luaver_install_luajit()
     local version=$1
     local luajit_dir_name="LuaJIT-${version}"
     local archive_name="${luajit_dir_name}.tar.gz"
-    local url="http://luajit.org/download/${archive_name}"
+    local url="https://luajit.org/download/${archive_name}"
 
     __luaver_print "Installing ${luajit_dir_name}"
 
@@ -638,7 +638,7 @@ __luaver_list_luajit()
 {
     if [ "x$1" = "x-r" ]
     then
-        __luaver_get_url "http://luajit.org/download.html" |
+        __luaver_get_url "https://luajit.org/download.html" |
         'awk' '/MD5 Checksums/,/<\/pre/ { print }' |
         'awk' '/LuaJIT.*gz/ { print $2 }' |
         'sed' -e s/LuaJIT-// -e s/\.tar\.gz// |
@@ -666,7 +666,7 @@ __luaver_install_luarocks()
     local version=$1
     local luarocks_dir_name="luarocks-${version}"
     local archive_name="${luarocks_dir_name}.tar.gz"
-    local url="http://luarocks.org/releases/${archive_name}"
+    local url="https://luarocks.org/releases/${archive_name}"
 
     __luaver_print "Installing ${luarocks_dir_name} for lua version ${lua_version}"
 
@@ -774,7 +774,7 @@ __luaver_list_luarocks()
 {
     if [ "x$1" = "x-r" ]
     then
-        __luaver_get_url "http://luarocks.github.io/luarocks/releases/releases.json" |
+        __luaver_get_url "https://luarocks.github.io/luarocks/releases/releases.json" |
         'awk' 'match($0, /"[0-9]+\.[0-9]\.[0-9]"/) { print substr($0, RSTART + 1, RLENGTH - 2) } ' |
         # Sort semver
         'sort' -t . -k 1,1n -k 2,2n -k 3,3n

@@ -31,14 +31,14 @@ _luaver()
                 install-luajit )
                     if [ -z "$_luaver_luajit_versions" ]
                     then
-                        _luaver_luajit_versions=($(_luaver_download "http://luajit.org/download.html" | awk '/MD5 Checksums/,/<\/pre/ { print }' | sed -n -e 's/.*LuaJIT-\(.*\)\.tar\.gz.*/\1/gp'))
+                        _luaver_luajit_versions=($(_luaver_download "https://luajit.org/download.html" | awk '/MD5 Checksums/,/<\/pre/ { print }' | sed -n -e 's/.*LuaJIT-\(.*\)\.tar\.gz.*/\1/gp'))
                     fi
                     opts=(${_luaver_luajit_versions[@]})
                     ;;
                 install-luarocks )
                     if [ -z "$_luaver_luarocks_versions" ]
                     then
-                        _luaver_luarocks_versions=($(_luaver_download 'http://luarocks.github.io/luarocks/releases/releases.json' | sed -n -e 's/.*luarocks-\(.*\)\.tar\.gz.*/\1/gp'))
+                        _luaver_luarocks_versions=($(_luaver_download 'https://luarocks.github.io/luarocks/releases/releases.json' | sed -n -e 's/.*luarocks-\(.*\)\.tar\.gz.*/\1/gp'))
                     fi
                     opts=(${_luaver_luarocks_versions[@]})
                     ;;

@@ -1,6 +1,6 @@
 # Lua Version Manager - luaver
 
-[![Build Status](https://travis-ci.org/DhavalKapil/luaver.svg?branch=master)](https://travis-ci.org/DhavalKapil/luaver) [![Join the chat at https://gitter.im/DhavalKapil/luaver](https://badges.gitter.im/DhavalKapil/luaver.svg)](https://gitter.im/DhavalKapil/luaver?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![License](http://img.shields.io/badge/Licence-MIT-brightgreen.svg)](LICENSE.md)
+[![Build Status](https://travis-ci.org/DhavalKapil/luaver.svg?branch=master)](https://travis-ci.org/DhavalKapil/luaver) [![Join the chat at https://gitter.im/DhavalKapil/luaver](https://badges.gitter.im/DhavalKapil/luaver.svg)](https://gitter.im/DhavalKapil/luaver?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![License](https://img.shields.io/badge/Licence-MIT-brightgreen.svg)](LICENSE.md)
 
 **luaver** helps to manage and switch between different versions of Lua, LuaJIT and Luarocks.
 
@@ -11,7 +11,7 @@
 3. Consistency between 'Lua' and 'Luarocks' maintained - Rocks and configurations for different lua versions are stored differently.
 4. Every terminal session can have a different environment configured. Default versions can also be configured.
 
-![gif animation showing usage of luaver](http://i.imgur.com/dCCvNfR.gif)
+![gif animation showing usage of luaver](https://i.imgur.com/dCCvNfR.gif)
 
 ## Requirements
 
@@ -119,4 +119,4 @@ Feel free to [file issues](https://github.com/DhavalKapil/luaver/issues) and sub
 
 ## License
 
-luaver is licensed under the [MIT license](http://dhaval.mit-license.org/).
+luaver is licensed under the [MIT license](https://dhaval.mit-license.org/).
