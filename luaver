@@ -857,4 +857,7 @@ luaver()
     __luaver_exec_command cd "${__luaver_present_dir}"
 }
 
-[ -n "$1" ] && luaver "$@"
+if [ -n "$1" ]
+then 
+    luaver "$@"
+fi
