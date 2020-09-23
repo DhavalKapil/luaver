@@ -380,19 +380,19 @@ __luaver_usage()
     __luaver_version
     __luaver_print_formatted "Usage:\n"
     __luaver_print_formatted "   luaver help                              Displays this message"
-    __luaver_print_formatted "   luaver install <version>                 Installs lua-<version>"
+    __luaver_print_formatted "   luaver install <version>                 Installs lua-<version> (can be \"latest\")"
     __luaver_print_formatted "   luaver use <version>                     Switches to lua-<version>"
     __luaver_print_formatted "   luaver set-default <version>             Sets <version> as default for lua"
     __luaver_print_formatted "   luaver unset-default                     Unsets the default lua version"
     __luaver_print_formatted "   luaver uninstall <version>               Uninstalls lua-<version>"
-    __luaver_print_formatted "   luaver list [-r]                         Lists installed lua versions"
+    __luaver_print_formatted "   luaver list [-r]                         Lists installed lua versions (can be \"latest\")"
     __luaver_print_formatted "   luaver install-luajit <version>          Installs luajit-<version>"
     __luaver_print_formatted "   luaver use-luajit <version>              Switches to luajit-<version>"
     __luaver_print_formatted "   luaver set-default-luajit <version>      Sets <version> as default for luajit"
     __luaver_print_formatted "   luaver unset-default-luajit              Unsets the default luajit version"
     __luaver_print_formatted "   luaver uninstall-luajit <version>        Uninstalls luajit-<version>"
     __luaver_print_formatted "   luaver list-luajit [-r]                  Lists installed luajit versions"
-    __luaver_print_formatted "   luaver install-luarocks <version>        Installs luarocks<version>"
+    __luaver_print_formatted "   luaver install-luarocks <version>        Installs luarocks<version> (can be \"latest\")"
     __luaver_print_formatted "   luaver use-luarocks <version>            Switches to luarocks-<version>"
     __luaver_print_formatted "   luaver set-default-luarocks <version>    Sets <version> as default for luarocks"
     __luaver_print_formatted "   luaver unset-default-luarocks            Unsets the default luarocks version"
@@ -411,6 +411,7 @@ __luaver_usage()
 __luaver_install_lua()
 {
     local version=$1
+    [ 'xlatest' = "x${version}" ] && version="$(__luaver_list_lua -r | grep -v '^latest$' | tail -n 1)"
     local lua_dir_name="lua-${version}"
     local archive_name="${lua_dir_name}.tar.gz"
     local url="http://www.lua.org/ftp/${archive_name}"
@@ -533,6 +534,7 @@ __luaver_list_lua()
         'awk' 'match($0, /lua-5\.[0-9]+(\.[0-9]+)?/) { print substr($0, RSTART + 4, RLENGTH - 4) }' |
         # Sort semver
         'sort' -t . -k 1,1n -k 2,2n -k 3,3n
+        printf 'latest\n'
     else
         __luaver_print "Installed versions: (currently $(__luaver_get_current_lua_version || echo none))"
         'find' "${__luaver_LUA_DIR}" -name '*.*' -prune | 'awk' -F/ '{ print $NF }'
@@ -542,6 +544,7 @@ __luaver_list_lua()
 __luaver_install_luajit()
 {
     local version=$1
+    [ 'xlatest' = "x${version}" ] && version="$(__luaver_list_luajit -r | grep -v '^latest$' | tail -n 1)"
     local luajit_dir_name="LuaJIT-${version}"
     local archive_name="${luajit_dir_name}.tar.gz"
     local url="http://luajit.org/download/${archive_name}"
@@ -646,6 +649,7 @@ __luaver_list_luajit()
         'sed' -e s/-beta/.beta./ |
         'sort' -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4r -k 5,5n -r |
         'sed' -e s/.beta./-beta/
+        printf 'latest\n'
     else
         __luaver_print "Installed versions: (currently $(__luaver_get_current_luajit_version || echo none))"
         'find' "${__luaver_LUAJIT_DIR}" -name '*.*' -prune | 'awk' -F/ '{ print $NF }'
@@ -664,6 +668,7 @@ __luaver_install_luarocks()
     lua_version_short=$(__luaver_get_current_lua_version_short)
 
     local version=$1
+    [ 'xlatest' = "x${version}" ] && version="$(__luaver_list_luarocks -r | grep -v '^latest$' | tail -n 1)"
     local luarocks_dir_name="luarocks-${version}"
     local archive_name="${luarocks_dir_name}.tar.gz"
     local url="http://luarocks.org/releases/${archive_name}"
@@ -778,6 +783,7 @@ __luaver_list_luarocks()
         'awk' 'match($0, /"[0-9]+\.[0-9]\.[0-9]"/) { print substr($0, RSTART + 1, RLENGTH - 2) } ' |
         # Sort semver
         'sort' -t . -k 1,1n -k 2,2n -k 3,3n
+        printf 'latest\n'
     else
         __luaver_print "Installed versions: (currently $(__luaver_get_current_luarocks_version || echo none) in lua $(__luaver_get_lua_version_by_current_luarocks || echo none))"
         'find' "${__luaver_LUAROCKS_DIR}" -name '*.*' -prune | 'awk' -F/ '{ print $NF }' | 'awk' -F_ '{ print $1 "\tlua:" $2}'
