@@ -24,21 +24,21 @@ _luaver()
                     declare -a _luaver_lua_versions
                     if [ -z "$_luaver_lua_versions" ]
                     then
-                        _luaver_lua_versions=($(_luaver_download 'https://www.lua.org/ftp/' | sed -n -e 's/.*lua\-\(5\.[0-9]\.[0-9]\)\.tar\.gz.*/\1/gp'))
+                        _luaver_lua_versions=($(_luaver_download 'https://www.lua.org/ftp/' | sed -n -e 's/.*lua\-\(5\.[0-9]\.[0-9]\)\.tar\.gz.*/\1/gp') 'latest')
                     fi
                     opts=(${_luaver_lua_versions[@]})
                     ;;
                 install-luajit )
                     if [ -z "$_luaver_luajit_versions" ]
                     then
-                        _luaver_luajit_versions=($(_luaver_download "http://luajit.org/download.html" | awk '/MD5 Checksums/,/<\/pre/ { print }' | sed -n -e 's/.*LuaJIT-\(.*\)\.tar\.gz.*/\1/gp'))
+                        _luaver_luajit_versions=($(_luaver_download "http://luajit.org/download.html" | awk '/MD5 Checksums/,/<\/pre/ { print }' | sed -n -e 's/.*LuaJIT-\(.*\)\.tar\.gz.*/\1/gp') 'latest')
                     fi
                     opts=(${_luaver_luajit_versions[@]})
                     ;;
                 install-luarocks )
                     if [ -z "$_luaver_luarocks_versions" ]
                     then
-                        _luaver_luarocks_versions=($(_luaver_download 'http://luarocks.github.io/luarocks/releases/releases.json' | sed -n -e 's/.*luarocks-\(.*\)\.tar\.gz.*/\1/gp'))
+                        _luaver_luarocks_versions=($(_luaver_download 'http://luarocks.github.io/luarocks/releases/releases.json' | sed -n -e 's/.*luarocks-\(.*\)\.tar\.gz.*/\1/gp') 'latest')
                     fi
                     opts=(${_luaver_luarocks_versions[@]})
                     ;;

@@ -16,7 +16,7 @@ _luaver_install()
     local -a lua_versions
     if _cache_invalid lua_versions || ! _retrieve_cache lua_versions
     then
-        lua_versions=($(_luaver_download 'https://www.lua.org/ftp/' | sed -n -e 's/.*lua\-\(5\.[0-9]\.[0-9]\)\.tar\.gz.*/\1/gp'))
+        lua_versions=($(_luaver_download 'https://www.lua.org/ftp/' | sed -n -e 's/.*lua\-\(5\.[0-9]\.[0-9]\)\.tar\.gz.*/\1/gp') 'latest')
 
         _store_cache lua_versions lua_versions
     fi
@@ -28,7 +28,7 @@ _luaver_install-luajit()
     local -a luajit_versions
     if _cache_invalid luajit_versions || ! _retrieve_cache luajit_versions
     then
-        luajit_versions=($(_luaver_download "http://luajit.org/download.html" | awk '/MD5 Checksums/,/<\/pre/ { print }' | sed -n -e 's/.*LuaJIT-\(.*\)\.tar\.gz.*/\1/gp'))
+        luajit_versions=($(_luaver_download "http://luajit.org/download.html" | awk '/MD5 Checksums/,/<\/pre/ { print }' | sed -n -e 's/.*LuaJIT-\(.*\)\.tar\.gz.*/\1/gp') 'latest')
 
         _store_cache luajit_versions luajit_versions
     fi
@@ -40,7 +40,7 @@ _luaver_install-luarocks()
     local -a luarocks_versions
     if _cache_invalid luarocks_versions || ! _retrieve_cache luarocks_versions
     then
-        luarocks_versions=($(_luaver_download 'http://luarocks.github.io/luarocks/releases/releases.json' | sed -n -e 's/.*luarocks-\(.*\)\.tar\.gz.*/\1/gp'))
+        luarocks_versions=($(_luaver_download 'http://luarocks.github.io/luarocks/releases/releases.json' | sed -n -e 's/.*luarocks-\(.*\)\.tar\.gz.*/\1/gp') 'latest')
 
         _store_cache luarocks_versions luarocks_versions
     fi
@@ -51,19 +51,19 @@ _luaver()
 {
     local -a _1st_arguments
     _1st_arguments=(
-        'install:Install the given lua version'
+        'install:Install the given lua version (can be "latest")'
         'use:Switch to the given lua version'
         'set-default:Set the given version as default for lua'
         'unset-default:Unset the default lua version'
         'uninstall:Uninstall the given lua version'
         'list:List installed lua versions'
-        'install-luajit:Install the given luajit version'
+        'install-luajit:Install the given luajit version (can be "latest")'
         'use-luajit:Switch to the given luajit version'
         'set-default-luajit:Set the given version as default for luajit'
         'unset-default-luajit:Unset the default luajit version'
         'uninstall-luajit:Uninstall the given luajit version'
         'list-luajit:List installed luajit versions'
-        'install-luarocks:Install the given luarocks version'
+        'install-luarocks:Install the given luarocks version (can be "latest")'
         'use-luarocks:Switch to the given luarocks version'
         'set-default-luarocks:Set the given version as default for luarocks'
         'unset-default-luarocks:Unset the default luarocks version'
