@@ -428,7 +428,7 @@ __luaver_install_lua()
         __luaver_print "Unable to detect platform. Using default 'posix'"
         platform=posix
     else
-        if [[ "${version}" =~ 5[.]4[.][0-9]+ ]]
+        if [ -n "$('echo' "${version}" | 'awk' '/^5\.4\./')" ]
         then
             platform="${platform}-readline"
         fi
