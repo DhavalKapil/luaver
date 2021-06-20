@@ -428,6 +428,10 @@ __luaver_install_lua()
         __luaver_print "Unable to detect platform. Using default 'posix'"
         platform=posix
     else
+        if [[ "${version}" =~ 5[.]4[.][0-9]+ ]]
+        then
+            platform="${platform}-readline"
+        fi
         __luaver_print "Platform detected: ${platform}"
     fi
 
