@@ -7,7 +7,7 @@
 #
 # MIT license http://www.opensource.org/licenses/mit-license.php
 
-__luaver_VERSION="1.1.0"
+__luaver_VERSION="1.1.0-lux"
 
 # Directories and files to be used
 
@@ -428,6 +428,10 @@ __luaver_install_lua()
         __luaver_print "Unable to detect platform. Using default 'posix'"
         platform=posix
     else
+        if [ -n "$('echo' "${version}" | 'awk' '/^5\.4\./')" ]
+        then
+            platform="${platform}-readline"
+        fi
         __luaver_print "Platform detected: ${platform}"
     fi
 
